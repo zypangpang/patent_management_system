@@ -1,0 +1,116 @@
+:root {
+    --panel-white-color: rgba(255,255,255,0.7);
+    --panel-dark-color: rgba(0,0,0,0.3);
+}
+@media (min-width: 1400px) {
+    .container{
+        max-width: 1300px;
+    }
+}
+.bkg-white-color {
+    background-color: var(--panel-white-color);
+}
+.bkg-dark-color {
+    background-color: var(--panel-dark-color);
+}
+.bkg-navbar-color {
+    background-color: #333333;
+}
+/*.dropdown-toggle::after {
+    display: none;
+}*/
+body {
+    /*background: lightgray url(../img/circles-and-roundabouts-2.png) repeat fixed;
+    background-size: auto;*/
+    background: lightgray;
+}
+/*.navbar-nav > li > a:hover{
+    background-color: lightgray;
+}*/
+.no-background {
+    background: none;
+}
+/*.category-title {
+    font-size:20px;
+}*/
+.category-logo {
+    font-size:40px;
+}
+.border-bottom {
+    border: thin none var(--panel-dark-color);
+    border-bottom-style: solid;
+}
+.border-top {
+    border: thin none var(--panel-dark-color);
+    border-top-style: solid;
+}
+.font-small {
+    font-size:14px;
+}
+.font-medium {
+    font-size:18px;
+}
+.navbar-nav .nav-item .nav-link {
+    color: #303030;
+}
+.navbar-nav .nav-item .nav-link:hover {
+    color: black;
+    background-color:rgba(0,0,0,0.1) ;
+}
+/*a {
+    color:black;
+}*/
+/*a :hover {
+    text-decoration: none;
+}*/
+.text-black {
+    color: black;
+}
+
+.navbar-nav .dropdown-item:hover {
+    background-color: lightgray;
+}
+.dropdown-item:hover {
+    background-color: grey;
+    background-color:rgba(0,0,0,0.1) ;
+}
+.dropdown-menu {
+    min-width:112px;
+}
+
+/*.btn-round {
+    border-radius: 20px;
+}*/
+.hidden {
+    display: none;
+}
+.bkg-profile-color {
+    background-color: rgba(255,255,255,0.5);
+}
+.border-right {
+    border: thin none var(--panel-dark-color);
+    border-right-style: solid;
+}
+.break-word {
+    word-wrap: break-word;
+    word-break: break-all;
+}
+/* Top right text */
+.top-right {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+.rounded-corner {
+    border-radius: 0px 4px 0px 4px;
+}
+.grey-border{
+    border:solid;
+    border-color: #333333;
+}
+.my-text-color{
+    color: #bcbcbc;
+}
+::placeholder{
+    color: #bcbcbc !important;
+}

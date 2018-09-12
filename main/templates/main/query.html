@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>数据查询</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <link type="text/css" href="{% static "main/css/bootstrap.min.css"%}" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+    {% load static %}
+    <script src="{% static "main/js/bootstrap.min.js" %}"></script>
+    {% load static %}
+    <script src="{% static "main/js/query.js" %}"></script>
+
+    {% load static %}
+    <link type="text/css" rel="stylesheet" href="{% static "main/css/index.css" %}">
+</head>
+<body>
+<nav class="navbar navbar-expand-md bg-white navbar-light my-4 px-3 py-0">
+    <!-- Brand -->
+    <a class="navbar-brand" href="#">Patent Management</a>
+
+    <!-- Toggler/collapsibe Button -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar links -->
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link p-3 " href="" data-toggle="dropdown">
+                    数据库管理
+                </a>
+                <div class="dropdown-menu border-0 rounded-0 m-0 py-0 ">
+                    <a class="dropdown-item px-3 py-2" href="/import/">
+                        导入
+                    </a>
+                    <a class="dropdown-item px-3 py-2" href="/add/">
+                        新增
+                    </a>
+                    <a class="dropdown-item px-3 py-2" href="/">
+                        查询
+                    </a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link p-3" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link p-3" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link p-3" href="#">Link</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container" >
+    <form action="/query/" method="post">
+        {% csrf_token %}
+
+        <div id="query_field_container">
+            <div class="row my-2 " id="query_field_input">
+                <div class="col p-0 mx-1">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <select class="input-group-text" id="query_field_select" name="query_field_1">
+                                {% for field in query_fields %}
+                                    <option value="{{ field.0 }}">{{ field.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <input name="query_text_1" type="text" class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row my-2">
+            <input type="number" hidden name="field_count" id="field_count" value="1">
+            <div class="col p-0 mx-1">
+                <button type="button" class="form-control" id="add_field_btn">添加条件</button>
+            </div>
+            <div class="col p-0 mx-1">
+                    <input type="submit" class="form-control bg-primary text-white">
+                </div>
+            </div>
+        </form>
+
+    <div class="row my-2 mt-3">
+        <div class="col p-0 mx-1">
+            <h3>查询结果</h3>
+            <table class="table table-striped bg-white table-bordered table-hover">
+                <thead class="table-primary">
+                <tr>
+                    {% for field in show_fields %}
+                        <th>{{ field }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in query_result %}
+                    <tr>
+                        {% for field in item %}
+                            <td>{{ field }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <!--<ul class="list-group">
+                {% for item in query_result %}
+                    <li class="list-group-item ">{{ item.title }}</li>
+                {% endfor %}
+            </ul>-->
+        </div>
+    </div>
+</div>
