@@ -11,5 +11,26 @@ $(function () {
             '<input name="query_text_'+field_count+'" type="text" class="form-control">'+
             '</div></div></div>');
         $('#field_count').attr('value',field_count)
-    })
+    });
+
+    var frm=$("#query_form");
+
+    frm.submit(function(e) {
+
+        e.preventDefault(); // avoid to execute the actual submit of the form.
+
+        console.log('my submit');
+
+        $.ajax({
+            type: frm.attr('method'),
+            url: frm.attr('action'),
+            data: frm.serialize(), // serializes the form's elements.
+            success: function(data)
+            {
+                $('#table_content').empty();
+                $('#table_content').append(data)
+            }
+        });
+
+    });
 });

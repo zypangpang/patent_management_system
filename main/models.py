@@ -1,9 +1,11 @@
+import datetime
 from django.db import models
 
 def pdf_directory_path(instance,filename):
-    return f'patent_pdf/{instance.pub_id}.pdf'
-def test_dir_path(instance,filename):
-    return f'test_pdf/{instance.name}.pdf'
+    year=datetime.datetime.strptime(instance.pub_date,"%Y-%m-%d").year
+    return f'patent_pdf/{year}/{instance.pub_id}.pdf'
+#def test_dir_path(instance,filename):
+#    return f'test_pdf/{instance.name}.pdf'
 
 class Applicant(models.Model):
     name=models.CharField(max_length=50,primary_key=True)
@@ -12,13 +14,13 @@ class Nation(models.Model):
     name=models.CharField(max_length=5,primary_key=True)
 
 class Patent(models.Model):
-    PATENT_TYPES=(
-        (0,'不确定'),
-        (1,'发明申请'),
-        (2,'发明授权'),
-        (3,'实用新型'),
-        (4,'外观设计'),
-    )
+    #PATENT_TYPES=(
+    #    (0,'不确定'),
+    #    (1,'发明申请'),
+    #    (2,'发明授权'),
+    #    (3,'实用新型'),
+    #    (4,'外观设计'),
+    #)
     title = models.TextField()
     title_cn=models.TextField()
     abstract=models.TextField()
@@ -29,7 +31,7 @@ class Patent(models.Model):
     pub_date = models.DateField('date published')
     application_id=models.CharField(max_length=20,unique=True)
     application_date=models.DateField()
-    patent_type=models.IntegerField(choices=PATENT_TYPES,default=0)
+    patent_type=models.CharField(max_length=40)
 
     cat_id=models.CharField(max_length=50,blank=True)
     branch1=models.CharField(max_length=60,blank=True)
@@ -58,9 +60,9 @@ class FamilyFatent(models.Model):
 
 
 
-class file_test(models.Model):
-    name=models.CharField(max_length=100)
-    file=models.FileField(upload_to=test_dir_path)
+#class file_test(models.Model):
+#    name=models.CharField(max_length=100)
+#    file=models.FileField(upload_to=test_dir_path)
 
 
 

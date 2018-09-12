@@ -1,0 +1,7 @@
+{% for item in query_result %}
+    <tr>
+        {% for field in item %}
+            <td>{{ field }}</td>
+        {% endfor %}
+    </tr>
+{% endfor %}

@@ -126,8 +126,8 @@
                         <span class="input-group-text">专利类型</span>
                     </div>
                     <select class="form-control" name="patent_type">
-                        {% for key,val in patent_type_dict.items %}
-                            <option value="{{ key }}">{{ val }}</option>
+                        {% for type in patent_types %}
+                            <option value="{{ type }}">{{ type }}</option>
                         {% endfor %}
                     </select>
                 </div>

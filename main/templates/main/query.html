@@ -60,7 +60,7 @@
 </nav>
 
 <div class="container" >
-    <form action="/query/" method="post">
+    <form action="/query/" method="post" id="query_form">
         {% csrf_token %}
 
         <div id="query_field_container">
@@ -101,7 +101,7 @@
                     {% endfor %}
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="table_content">
                 {% for item in query_result %}
                     <tr>
                         {% for field in item %}

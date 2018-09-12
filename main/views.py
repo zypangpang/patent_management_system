@@ -5,16 +5,16 @@ from .models import Nation,Applicant,FamilyFatent,Patent
 from .PatentForm import PatentForm
 
 from django.http import HttpResponse
-PATENT_TYPE_DICT={'不确定':0,
-        '发明申请':1,
-        '发明授权':2,
-        '实用新型':3,
-        '外观设计':4,}
-PATENT_TYPE_DICT_REVERSE={0:'不确定',
-        1:'发明申请',
-        2:'发明授权',
-        3:'实用新型',
-        4:'外观设计',}
+PATENT_TYPES={'不确定',
+        '发明申请',
+        '发明授权',
+        '实用新型',
+        '外观设计', }
+#PATENT_TYPE_DICT_REVERSE={0:'不确定',
+#        1:'发明申请',
+#        2:'发明授权',
+#        3:'实用新型',
+#        4:'外观设计',}
 def find(a, x):
     'Locate the leftmost value exactly equal to x'
     i = bisect.bisect_left(a, x)
@@ -39,7 +39,7 @@ def add_patents_from_csv_and_pdfs(csv_file,pdf_files):
                      branch2=row['二级分支'],branch3=row['三级分支'],invent_desc=row['发明点'],
                      tech_prob=row['技术问题'],pub_id=row['公开（公告）号'],pub_date=row['公开（公告）日'].replace('/','-'),
                      application_id=row['申请号'],application_date=row['申请日'].replace('/','-'),
-                   patent_type=PATENT_TYPE_DICT[row['专利类型']],cat_id=row['主分类号'],pdf_file=pdf_files[t])
+                   patent_type=row['专利类型'],cat_id=row['主分类号'],pdf_file=pdf_files[t])
             p.save()
             for applicant in applicants:
                 p.applicants.add(applicant)
@@ -112,7 +112,7 @@ def add_data(request):
             print(form.errors)
             return HttpResponse("form not valid")'''
     else:
-        return render(request,'main/index.html',{'patent_type_dict':PATENT_TYPE_DICT_REVERSE})
+        return render(request,'main/index.html', {'patent_types':PATENT_TYPES})
 
 def import_data(request):
     if request.method=='POST':
@@ -157,26 +157,29 @@ def query_data(request):
             else:
                 QObject &=Q(**{query_field+'__icontains':query_text})
         query_raw_result=Patent.objects.filter(QObject).distinct()
+        if len(query_raw_result)>100:
+            query_raw_result=query_raw_result[:100]
         query_result=[]
         for item in query_raw_result:
             applicant_str=','.join([a.name for a in item.applicants.all()])
-            patent_type=PATENT_TYPE_DICT_REVERSE[item.patent_type]
+            #patent_type=PATENT_TYPE_DICT_REVERSE[item.patent_type]
             query_result.append([item.title,item.title_cn,item.pub_id,item.pub_date.strftime('%Y-%m-%d'),
                                  item.application_id,item.application_date.strftime('%Y-%m-%d'),applicant_str,
-                                 patent_type])
+                                 item.patent_type])
 
-        return render(request,'main/query.html',{'query_fields':QUERY_FIELDS,
-                                                 'query_result':query_result,
-                                                 'show_fields':SHOW_FIELDS})
+        #return render(request,'main/query.html',{'query_fields':QUERY_FIELDS,
+        #                                         'query_result':query_result,
+        #                                         'show_fields':SHOW_FIELDS})
+        return render(request,'main/query_result_table.html',{'query_result':query_result})
     else:
         query_raw_result=Patent.objects.all()[:50]
         query_result=[]
         for item in query_raw_result:
             applicant_str=','.join([a.name for a in item.applicants.all()])
-            patent_type=PATENT_TYPE_DICT_REVERSE[item.patent_type]
+            #patent_type=PATENT_TYPE_DICT_REVERSE[item.patent_type]
             query_result.append([item.title,item.title_cn,item.pub_id,item.pub_date.strftime('%Y-%m-%d'),
                                  item.application_id,item.application_date.strftime('%Y-%m-%d'),applicant_str,
-                                 patent_type])
+                                 item.patent_type])
         return render(request,'main/query.html',{'query_fields':QUERY_FIELDS,
                                                  'show_fields':SHOW_FIELDS,
                                                  'query_result':query_result})
