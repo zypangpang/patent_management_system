@@ -27,8 +27,11 @@ $(function () {
             data: frm.serialize(), // serializes the form's elements.
             success: function(data)
             {
-                $('#table_content').empty();
-                $('#table_content').append(data)
+                //console.log(data);
+                $('#query_show_div').empty();
+                $('#query_show_div').append(data);
+                //$('#result_header').text('查询结果('+$('#result_count').text()+')');
+
             }
         });
 

@@ -5,11 +5,11 @@ from .models import Nation,Applicant,FamilyFatent,Patent
 from .PatentForm import PatentForm
 
 from django.http import HttpResponse
-PATENT_TYPES={'不确定',
+PATENT_TYPES=('不确定',
         '发明申请',
         '发明授权',
         '实用新型',
-        '外观设计', }
+        '外观设计', )
 #PATENT_TYPE_DICT_REVERSE={0:'不确定',
 #        1:'发明申请',
 #        2:'发明授权',
@@ -21,6 +21,22 @@ def find(a, x):
     if i != len(a) and a[i] == x:
         return i
     raise -1
+def add_patent_from_row(row,pdf_file):
+    applicants,nations=add_applicants_and_nations(row['申请人'], row['同族国家'])
+    p=Patent(title=row['标题'],title_cn=row['标题（翻译）'],abstract=row['摘要'],
+                     abstract_cn=row['摘要（翻译）'],index=row['标引'],branch1=row['一级分支'],
+                     branch2=row['二级分支'],branch3=row['三级分支'],invent_desc=row['发明点'],
+                     tech_prob=row['技术问题'],pub_id=row['公开（公告）号'],pub_date=row['公开（公告）日'].replace('/','-'),
+                     application_id=row['申请号'],application_date=row['申请日'].replace('/','-'),
+                   patent_type=row['专利类型'],cat_id=row['主分类号'],pdf_file=pdf_file)
+    p.save()
+    for applicant in applicants:
+        p.applicants.add(applicant)
+    for nation in nations:
+        p.nations.add(nation)
+    add_same_family_patents(p,row['简单同族'])
+
+
 def add_patents_from_csv_and_pdfs(csv_file,pdf_files):
     error_messages=[]
 
@@ -33,25 +49,14 @@ def add_patents_from_csv_and_pdfs(csv_file,pdf_files):
         t=find(pdf_names,pub_id+'.pdf')
         print(pdf_files[t].name)
         if t!=-1:
-            applicants,nations=add_applicants_and_nations(row['申请人'], row['同族国家'])
-            p=Patent(title=row['标题'],title_cn=row['标题（翻译）'],abstract=row['摘要'],
-                     abstract_cn=row['摘要（翻译）'],index=row['标引'],branch1=row['一级分支'],
-                     branch2=row['二级分支'],branch3=row['三级分支'],invent_desc=row['发明点'],
-                     tech_prob=row['技术问题'],pub_id=row['公开（公告）号'],pub_date=row['公开（公告）日'].replace('/','-'),
-                     application_id=row['申请号'],application_date=row['申请日'].replace('/','-'),
-                   patent_type=row['专利类型'],cat_id=row['主分类号'],pdf_file=pdf_files[t])
-            p.save()
-            for applicant in applicants:
-                p.applicants.add(applicant)
-            for nation in nations:
-                p.nations.add(nation)
-            add_same_family_patents(p,row['简单同族'])
+            add_patent_from_row(row,pdf_files[t])
 
             ####### 此处正式应用时删除###########
             break
             ###########################
         else:
             error_messages.append(pub_id+" no file!")
+
     return error_messages
 
 def add_same_family_patents(patent,same_family_str):
@@ -86,21 +91,7 @@ def index(request):
 def add_data(request):
     if request.method=='POST':
         #form=PatentForm(request.POST,request.FILES)
-        applicants,nations=add_applicants_and_nations(request.POST['applicants'],
-                                                      request.POST['nations'])
-        row=request.POST
-        p=Patent(title=row['title'],title_cn=row['title_cn'],abstract=row['abstract'],
-                     abstract_cn=row['abstract_cn'],index=row['index'],branch1=row['branch1'],
-                     branch2=row['branch2'],branch3=row['branch3'],invent_desc=row['invent_desc'],
-                     tech_prob=row['tech_prob'],pub_id=row['pub_id'],pub_date=row['pub_date'].replace('/','-'),
-                     application_id=row['application_id'],application_date=row['application_date'].replace('/','-'),
-                   patent_type=row['patent_type'],cat_id=row['cat_id'],pdf_file=request.FILES['pdf_file'])
-        p.save()
-        for applicant in applicants:
-            p.applicants.add(applicant)
-        for nation in nations:
-            p.nations.add(nation)
-        add_same_family_patents(p,row['same_family_patent'])
+        add_patent_from_row(request.POST,request.FILES['pdf_file'])
         return HttpResponse("save successful")
         '''if form.is_valid():
             patent=form.save()
@@ -130,6 +121,7 @@ def import_data(request):
 
     else:
         return render(request,'main/import.html')
+
 QUERY_FIELDS=(
     ('title','标题'),('title_cn','标题（翻译）'),('abstract','摘要'),
     ('abstract_cn','摘要（翻译）'),('index','标引'),('branch1','一级分支'),('branch2','二级分支'),
@@ -166,11 +158,17 @@ def query_data(request):
             query_result.append([item.title,item.title_cn,item.pub_id,item.pub_date.strftime('%Y-%m-%d'),
                                  item.application_id,item.application_date.strftime('%Y-%m-%d'),applicant_str,
                                  item.patent_type])
+        result_length=len(query_raw_result)
+        result_count=str(result_length)
+        if(result_length>100):
+            result_count+=',只显示前100'
 
         #return render(request,'main/query.html',{'query_fields':QUERY_FIELDS,
         #                                         'query_result':query_result,
         #                                         'show_fields':SHOW_FIELDS})
-        return render(request,'main/query_result_table.html',{'query_result':query_result})
+        return render(request,'main/query_result_table.html',{'query_result':query_result,
+                                                              'show_fields':SHOW_FIELDS,
+                                                              'result_count':result_count})
     else:
         query_raw_result=Patent.objects.all()[:50]
         query_result=[]
@@ -180,9 +178,17 @@ def query_data(request):
             query_result.append([item.title,item.title_cn,item.pub_id,item.pub_date.strftime('%Y-%m-%d'),
                                  item.application_id,item.application_date.strftime('%Y-%m-%d'),applicant_str,
                                  item.patent_type])
+        result_length=len(query_raw_result)
+        result_count=str(result_length)
+        if(result_length>100):
+            result_count+=',只显示前100'
         return render(request,'main/query.html',{'query_fields':QUERY_FIELDS,
                                                  'show_fields':SHOW_FIELDS,
+                                                 'result_count':result_count,
                                                  'query_result':query_result})
+
+def show_data(request):
+    return HttpResponse(request.GET['pub_id'])
 
 
 # Create your views here.

@@ -1,7 +1,20 @@
-{% for item in query_result %}
-    <tr>
-        {% for field in item %}
-            <td>{{ field }}</td>
-        {% endfor %}
-    </tr>
-{% endfor %}
+<h5 id="result_count" hidden >{{ result_count }}</h5>
+<h3 id="result_header">查询结果({{ result_count }})</h3>
+            <table class="table table-striped bg-white table-bordered table-hover">
+                <thead class="table-primary">
+                <tr>
+                    {% for field in show_fields %}
+                        <th>{{ field }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody id="table_content">
+                {% for item in query_result %}
+                    <tr>
+                        {% for field in item %}
+                            <td>{{ field }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>

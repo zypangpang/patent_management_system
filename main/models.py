@@ -4,8 +4,8 @@ from django.db import models
 def pdf_directory_path(instance,filename):
     year=datetime.datetime.strptime(instance.pub_date,"%Y-%m-%d").year
     return f'patent_pdf/{year}/{instance.pub_id}.pdf'
-#def test_dir_path(instance,filename):
-#    return f'test_pdf/{instance.name}.pdf'
+def test_dir_path(instance,filename):
+    return f'test_pdf/{instance.name}.pdf'
 
 class Applicant(models.Model):
     name=models.CharField(max_length=50,primary_key=True)

@@ -6,4 +6,5 @@ urlpatterns = [
     path('add/',views.add_data,name='add'),
     path('import/',views.import_data,name='import'),
     path('query/',views.query_data,name='query'),
+    path('detail/',views.show_data,name='detail'),
 ]
