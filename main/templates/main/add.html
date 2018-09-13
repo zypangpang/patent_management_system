@@ -175,10 +175,29 @@
             <div class="col px-2">
                 <div class="input-group m-0">
                     <div class="input-group-prepend">
+                        <span class="input-group-text">发明点</span>
+                    </div>
+                    <input name="invent_desc" required type="text" class="form-control" value="无">
+                </div>
+            </div>
+            <div class="col px-2" >
+                <div class="input-group m-0">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">技术问题</span>
+                    </div>
+                    <input name="tech_prob" required type="text" class="form-control" value="无">
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-2">
+            <div class="col px-2">
+                <div class="input-group m-0">
+                    <div class="input-group-prepend">
                         <span class="input-group-text">公开日期</span>
                     </div>
                     <input name="pub_date" required type="text" class="form-control"
-                           placeholder="格式：2018-01-21" pattern="\d{4}-\d{2}-\d{2}">
+                           placeholder="格式：2018/01/21" pattern="\d{4}/\d{2}/\d{2}">
                 </div>
             </div>
             <div class="col px-2" >
@@ -187,7 +206,7 @@
                         <span class="input-group-text">申请日期</span>
                     </div>
                     <input name="application_date" required type="text" class="form-control"
-                    placeholder="格式：2018-01-21" pattern="\d{4}-\d{2}-\d{2}">
+                    placeholder="格式：2018/01/21" pattern="\d{4}/\d{2}/\d{2}">
                 </div>
             </div>
 
@@ -211,27 +230,17 @@
             </div>
         </div>
 
-        <div class="row my-2">
-            <div class="col px-2">
-                <!--<div class="form-group">
-                    <label for="comment" class="">发明点：</label>-->
-                    <textarea class="form-control" rows="3" name="invent_desc"  placeholder="发明点"></textarea>
-               <!-- </div>-->
-            </div>
-            <div class="col px-2">
-                <textarea class="form-control" rows="3" name="tech_prob"  placeholder="技术问题"></textarea>
-            </div>
-        </div>
 
         <div class="row my-2">
             <div class="col px-2">
-                <!--<div class="form-group">
-                    <label for="comment" class="">发明点：</label>-->
-                    <textarea class="form-control" rows="5" name="abstract"  placeholder="摘要"></textarea>
+                <!--<div class="form-group">-->
+                    <label for="abstract_area" class="p-0 m-0">摘要:</label>
+                    <textarea id="abstract_area" class="form-control" rows="5" name="abstract" ></textarea>
                <!-- </div>-->
             </div>
             <div class="col px-2">
-                <textarea class="form-control" rows="5" name="abstract_cn" placeholder="摘要(翻译)"></textarea>
+                <label for="abstract_cn_area" class="p-0 m-0">摘要（翻译）:</label>
+                <textarea id="abstract_cn_area" class="form-control" rows="5" name="abstract_cn" ></textarea>
             </div>
 
         </div>

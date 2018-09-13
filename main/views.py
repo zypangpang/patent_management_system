@@ -21,20 +21,34 @@ def find(a, x):
     if i != len(a) and a[i] == x:
         return i
     raise -1
-def add_patent_from_row(row,pdf_file):
-    applicants,nations=add_applicants_and_nations(row['申请人'], row['同族国家'])
-    p=Patent(title=row['标题'],title_cn=row['标题（翻译）'],abstract=row['摘要'],
-                     abstract_cn=row['摘要（翻译）'],index=row['标引'],branch1=row['一级分支'],
-                     branch2=row['二级分支'],branch3=row['三级分支'],invent_desc=row['发明点'],
-                     tech_prob=row['技术问题'],pub_id=row['公开（公告）号'],pub_date=row['公开（公告）日'].replace('/','-'),
-                     application_id=row['申请号'],application_date=row['申请日'].replace('/','-'),
-                   patent_type=row['专利类型'],cat_id=row['主分类号'],pdf_file=pdf_file)
+def add_patent_from_row(zh_cn,row,request_files):
+    if zh_cn:
+        applicants,nations=add_applicants_and_nations(row['申请人'], row['同族国家'])
+        p=Patent(title=row['标题'],title_cn=row['标题（翻译）'],abstract=row['摘要'],
+                         abstract_cn=row['摘要（翻译）'],index=row['标引'],branch1=row['一级分支'],
+                         branch2=row['二级分支'],branch3=row['三级分支'],invent_desc=row['发明点'],
+                         tech_prob=row['技术问题'],pub_id=row['公开（公告）号'],pub_date=row['公开（公告）日'].replace('/','-'),
+                         application_id=row['申请号'],application_date=row['申请日'].replace('/','-'),
+                       patent_type=row['专利类型'],cat_id=row['主分类号'])
+    else:
+        applicants,nations=add_applicants_and_nations(row['applicants'], row['nations'])
+        p=Patent(title=row['title'],title_cn=row['title_cn'],abstract=row['abstract'],
+                         abstract_cn=row['abstract_cn'],index=row['index'],branch1=row['branch1'],
+                         branch2=row['branch2'],branch3=row['branch3'],invent_desc=row['invent_desc'],
+                         tech_prob=row['tech_prob'],pub_id=row['pub_id'],pub_date=row['pub_date'].replace('/','-'),
+                         application_id=row['application_id'],application_date=row['application_date'].replace('/','-'),
+                       patent_type=row['patent_type'],cat_id=row['cat_id'],pdf_file=request_files['pdf_file'])
+    #if request_files:
+    #    p.pdf_file=request_files['pdf_file']
     p.save()
     for applicant in applicants:
         p.applicants.add(applicant)
     for nation in nations:
         p.nations.add(nation)
-    add_same_family_patents(p,row['简单同族'])
+    if(zh_cn):
+        add_same_family_patents(p,row['简单同族'])
+    else:
+        add_same_family_patents(p,row['same_family_patent'])
 
 
 def add_patents_from_csv_and_pdfs(csv_file,pdf_files):
@@ -49,7 +63,7 @@ def add_patents_from_csv_and_pdfs(csv_file,pdf_files):
         t=find(pdf_names,pub_id+'.pdf')
         print(pdf_files[t].name)
         if t!=-1:
-            add_patent_from_row(row,pdf_files[t])
+            add_patent_from_row(True,row,pdf_files[t])
 
             ####### 此处正式应用时删除###########
             break
@@ -60,6 +74,7 @@ def add_patents_from_csv_and_pdfs(csv_file,pdf_files):
     return error_messages
 
 def add_same_family_patents(patent,same_family_str):
+
     same_family_patents=same_family_str.split(';')
     for sfpatent in same_family_patents:
         sfpatent=sfpatent.strip()
@@ -91,7 +106,7 @@ def index(request):
 def add_data(request):
     if request.method=='POST':
         #form=PatentForm(request.POST,request.FILES)
-        add_patent_from_row(request.POST,request.FILES['pdf_file'])
+        add_patent_from_row(False,request.POST,request.FILES)
         return HttpResponse("save successful")
         '''if form.is_valid():
             patent=form.save()
@@ -103,7 +118,7 @@ def add_data(request):
             print(form.errors)
             return HttpResponse("form not valid")'''
     else:
-        return render(request,'main/index.html', {'patent_types':PATENT_TYPES})
+        return render(request, 'main/add.html', {'patent_types':PATENT_TYPES})
 
 def import_data(request):
     if request.method=='POST':
@@ -153,7 +168,7 @@ def query_data(request):
             query_raw_result=query_raw_result[:100]
         query_result=[]
         for item in query_raw_result:
-            applicant_str=','.join([a.name for a in item.applicants.all()])
+            applicant_str=';'.join([a.name for a in item.applicants.all()])
             #patent_type=PATENT_TYPE_DICT_REVERSE[item.patent_type]
             query_result.append([item.title,item.title_cn,item.pub_id,item.pub_date.strftime('%Y-%m-%d'),
                                  item.application_id,item.application_date.strftime('%Y-%m-%d'),applicant_str,
@@ -173,7 +188,7 @@ def query_data(request):
         query_raw_result=Patent.objects.all()[:50]
         query_result=[]
         for item in query_raw_result:
-            applicant_str=','.join([a.name for a in item.applicants.all()])
+            applicant_str=';'.join([a.name for a in item.applicants.all()])
             #patent_type=PATENT_TYPE_DICT_REVERSE[item.patent_type]
             query_result.append([item.title,item.title_cn,item.pub_id,item.pub_date.strftime('%Y-%m-%d'),
                                  item.application_id,item.application_date.strftime('%Y-%m-%d'),applicant_str,
@@ -186,9 +201,72 @@ def query_data(request):
                                                  'show_fields':SHOW_FIELDS,
                                                  'result_count':result_count,
                                                  'query_result':query_result})
+def change_data(request):
+    pub_id=request.POST['pub_id']
+    p=Patent.objects.get(pk=pub_id)
+
+    family_patents=FamilyFatent.objects.filter(patent=p)
+    family_patents.delete()
+
+    row=request.POST
+    applicants,nations=add_applicants_and_nations(row['applicants'], row['nations'])
+
+    p.title=row['title']
+    p.title_cn=row['title_cn']
+    p.abstract=row['abstract']
+    p.abstract_cn=row['abstract_cn']
+    p.index=row['index']
+    p.branch1=row['branch1']
+    p.branch2=row['branch2']
+    p.branch3=row['branch3']
+    p.invent_desc=row['invent_desc']
+    p.tech_prob=row['tech_prob']
+    p.pub_id=row['pub_id']
+    p.pub_date=row['pub_date'].replace('/','-')
+    p.application_id=row['application_id']
+    p.application_date=row['application_date'].replace('/','-')
+    p.patent_type=row['patent_type']
+    p.cat_id=row['cat_id']
+    #if request_files:
+    #    p.pdf_file=request_files['pdf_file']
+    p.save()
+
+    p.applicants.clear()
+    p.nations.clear()
+    for applicant in applicants:
+        p.applicants.add(applicant)
+    for nation in nations:
+        p.nations.add(nation)
+
+    add_same_family_patents(p,row['same_family_patent'])
+
 
 def show_data(request):
-    return HttpResponse(request.GET['pub_id'])
+    if request.method=='POST':
+        change_data(request)
+        return HttpResponse("success")
+    else:
+        pub_id=request.GET['pub_id']
+        try:
+            patent=Patent.objects.get(pk=pub_id)
+        except Exception as e:
+            print(e)
 
+        applicant_str=';'.join([a.name for a in patent.applicants.all()])
+        nation_str=','.join([a.name for a in patent.nations.all()])
+        family_patents=FamilyFatent.objects.filter(patent=patent)
+        family_patent_str=';'.join([a.same_family_patent for a in family_patents])
+        return_dict={
+            'item':patent,
+            'applicant_str':applicant_str,
+            'nation_str':nation_str,
+            'family_patent_str':family_patent_str,
+
+            'patent_types':PATENT_TYPES,
+        }
+        return render(request,'main/detail.html',return_dict)
+
+def view_file(request,pub_id):
+    return HttpResponse(pub_id)
 
 # Create your views here.

@@ -12,7 +12,7 @@
                 {% for item in query_result %}
                     <tr>
                         {% for field in item %}
-                            <td>{{ field }}</td>
+                            <td><a class="text-black" href="{% url 'detail' %}?pub_id={{ item.2 }}">{{ field }}</a></td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
