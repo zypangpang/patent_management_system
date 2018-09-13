@@ -3,8 +3,8 @@
             <table class="table table-striped bg-white table-bordered table-hover">
                 <thead class="table-primary">
                 <tr>
-                    {% for field in show_fields %}
-                        <th>{{ field }}</th>
+                    {% for field,width in show_fields %}
+                        <th style="width: {{ width }};">{{ field }}</th>
                     {% endfor %}
                 </tr>
                 </thead>

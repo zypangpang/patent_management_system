@@ -59,6 +59,31 @@
         </ul>
     </div>
 </nav>
+
+<div class="modal fade" id="delModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">确认信息</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+          确定删除公开号为 {{ item.pub_id }} 的专利吗？此操作不可恢复
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+          <button type="button" class="btn btn-danger" id="del_confirm_btn">确定</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+      </div>
+
+    </div>
+  </div>
+</div>
 <div class="container">
     <div class="row">
         <div class="col-sm-10 px-0 m-0">
@@ -66,7 +91,9 @@
         </div>
         <div class="col-sm-2 p-1 m-0 d-flex justify-content-end">
             <button id="change_btn" type="button" class="btn btn-primary mx-2">修改</button>
-            <a href="{% url 'view_file' item.pub_id %}" id="view_file_btn" role="button" class="btn btn-primary mx-2">查看文件</a>
+            <a target="_blank" href="{% url 'view_file' item.pub_id %}" id="view_file_btn" role="button" class="btn btn-primary mx-2">查看文件</a>
+            <button id="del_btn" type="button" class="btn btn-danger mx-2"
+                    data-toggle="modal" data-target="#delModal">删除</button>
         </div>
     </div>
 

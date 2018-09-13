@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Bootstrap Example</title>
+    <title>添加专利</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% load static %}
@@ -11,14 +11,15 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
     {% load static %}
   <script src="{% static "main/js/bootstrap.min.js" %}"></script>
-
+{% load static %}
+  <script src="{% static "main/js/add.js" %}"></script>
     {% load static %}
     <link type="text/css" rel="stylesheet" href="{% static "main/css/index.css" %}">
 </head>
 <body>
 <nav class="navbar navbar-expand-md bg-white navbar-light my-4 px-3 py-0">
     <!-- Brand -->
-    <a class="navbar-brand" href="#">Patent Management</a>
+    <a class="navbar-brand" href="#">专利在线管理系统</a>
 
     <!-- Toggler/collapsibe Button -->
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
@@ -56,7 +57,33 @@
         </ul>
     </div>
 </nav>
+{% if message %}
+<div class="modal fade" id="messageModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">信息</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+          {{ message }}
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endif %}
 <div class="container">
+    <p hidden id="status">{{ status }}</p>
     <h3 class="mb-3 p-0">新增专利项目</h3>
     <!--<p>Three equal width columns! Try to add a new div with class="col" inside the row class - this will create four equal-width columns.</p>-->
     <form action="" method="post" enctype="multipart/form-data">
@@ -197,7 +224,7 @@
                         <span class="input-group-text">公开日期</span>
                     </div>
                     <input name="pub_date" required type="text" class="form-control"
-                           placeholder="格式：2018/01/21" pattern="\d{4}/\d{2}/\d{2}">
+                           placeholder="格式：2018/8/18" pattern="\d{4}/\d{1,2}/\d{1,2}">
                 </div>
             </div>
             <div class="col px-2" >
@@ -206,7 +233,7 @@
                         <span class="input-group-text">申请日期</span>
                     </div>
                     <input name="application_date" required type="text" class="form-control"
-                    placeholder="格式：2018/01/21" pattern="\d{4}/\d{2}/\d{2}">
+                    placeholder="格式：2018/8/18" pattern="\d{4}/\d{1,2}/\d{1,2}">
                 </div>
             </div>
 

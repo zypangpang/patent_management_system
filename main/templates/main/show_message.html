@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>信息</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <link type="text/css" href="{% static "main/css/bootstrap.min.css"%}" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+    {% load static %}
+  <script src="{% static "main/js/bootstrap.min.js" %}"></script>
+
+    {% load static %}
+    <link type="text/css" rel="stylesheet" href="{% static "main/css/index.css" %}">
+    {% load static %}
+    <link type="text/css" href="{% static "main/css/fontawesome.css"%}" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="row m-3">
+        <div class="col-12 alert alert-success">
+            <h5 class="m-0 p-0"><i class="fas fa-exclamation-circle"></i> {{ message }}</h5>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

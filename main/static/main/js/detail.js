@@ -5,5 +5,4 @@ $(function () {
         $('select').removeAttr('disabled');
         $('#submit_btn').removeAttr('hidden');
     });
-
 });

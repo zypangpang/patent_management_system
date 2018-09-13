@@ -106,8 +106,15 @@ def index(request):
 def add_data(request):
     if request.method=='POST':
         #form=PatentForm(request.POST,request.FILES)
-        add_patent_from_row(False,request.POST,request.FILES)
-        return HttpResponse("save successful")
+        #1 for success 2 for failure 0 for default
+        message='添加成功'
+        try:
+            add_patent_from_row(False,request.POST,request.FILES)
+        except Exception as e:
+            print(e)
+            message='添加失败'
+        return render(request, 'main/add.html', {'patent_types':PATENT_TYPES,
+                                                 'message':message})
         '''if form.is_valid():
             patent=form.save()
             print(request.POST['same_family_patent'])
@@ -118,7 +125,8 @@ def add_data(request):
             print(form.errors)
             return HttpResponse("form not valid")'''
     else:
-        return render(request, 'main/add.html', {'patent_types':PATENT_TYPES})
+        return render(request, 'main/add.html', {'patent_types':PATENT_TYPES,
+                                                 'message':''})
 
 def import_data(request):
     if request.method=='POST':
@@ -145,7 +153,9 @@ QUERY_FIELDS=(
     ('application_date','申请日'),('applicants__name','申请人'),('patent_type','专利类型'),
     ('cat_id','主分类号'),('nations__name','同族国家'),
 )
-SHOW_FIELDS=('标题','标题（翻译）','公开号','公开（公告）日','申请号','申请日','申请人','专利类型')
+SHOW_FIELDS=(('标题','20%'),('标题（翻译）','20%'),('公开号','10%'),
+             ('公开（公告）日','10%'),('申请号','10%'),('申请日','10%'),('申请人','10%'),
+             ('专利类型','10%'))
 def query_data(request):
     if request.method=='POST':
 
@@ -251,6 +261,7 @@ def show_data(request):
             patent=Patent.objects.get(pk=pub_id)
         except Exception as e:
             print(e)
+            return render(request,'main/show_message.html',{'message':'数据库中查不到本专利，请检查公开号'})
 
         applicant_str=';'.join([a.name for a in patent.applicants.all()])
         nation_str=','.join([a.name for a in patent.nations.all()])
@@ -267,6 +278,16 @@ def show_data(request):
         return render(request,'main/detail.html',return_dict)
 
 def view_file(request,pub_id):
-    return HttpResponse(pub_id)
+    patent=Patent.objects.get(pk=pub_id)
+    #print(patent.pdf_file.name)
+    filename=''
+    if patent.pdf_file:
+        filename = patent.pdf_file.name.split('/')[-1]
+        response = HttpResponse(patent.pdf_file, content_type='application/pdf')
+    else:
+        return render(request,'main/show_message.html',{'message':'该专利没有文件'})
+    #response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+    return response
 
 # Create your views here.
