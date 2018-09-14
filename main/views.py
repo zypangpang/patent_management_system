@@ -1,8 +1,8 @@
-import csv,bisect
+import csv,bisect,json
 from django.db.models import Q
-from django.shortcuts import render
-from .models import Nation,Applicant,FamilyFatent,Patent
-from .PatentForm import PatentForm
+from django.shortcuts import render,redirect
+from .models import Nation,Applicant,FamilyFatent,Patent,Note
+from django.contrib.auth.decorators import login_required
 
 from django.http import HttpResponse
 PATENT_TYPES=('不确定',
@@ -100,9 +100,11 @@ def add_applicants_and_nations(applicant_str, nation_str):
 
     return applicant_list,nation_list
 
+@login_required
 def index(request):
     return HttpResponse("hello")
 
+@login_required
 def add_data(request):
     if request.method=='POST':
         #form=PatentForm(request.POST,request.FILES)
@@ -128,6 +130,7 @@ def add_data(request):
         return render(request, 'main/add.html', {'patent_types':PATENT_TYPES,
                                                  'message':''})
 
+@login_required
 def import_data(request):
     if request.method=='POST':
         csv_file=request.FILES['csv_file']
@@ -156,6 +159,7 @@ QUERY_FIELDS=(
 SHOW_FIELDS=(('标题','20%'),('标题（翻译）','20%'),('公开号','10%'),
              ('公开（公告）日','10%'),('申请号','10%'),('申请日','10%'),('申请人','10%'),
              ('专利类型','10%'))
+@login_required
 def query_data(request):
     if request.method=='POST':
 
@@ -192,6 +196,7 @@ def query_data(request):
         #                                         'query_result':query_result,
         #                                         'show_fields':SHOW_FIELDS})
         return render(request,'main/query_result_table.html',{'query_result':query_result,
+                                                              'user_name':request.user.get_username(),
                                                               'show_fields':SHOW_FIELDS,
                                                               'result_count':result_count})
     else:
@@ -209,8 +214,10 @@ def query_data(request):
             result_count+=',只显示前100'
         return render(request,'main/query.html',{'query_fields':QUERY_FIELDS,
                                                  'show_fields':SHOW_FIELDS,
+                                                 'user_name':request.user.get_username(),
                                                  'result_count':result_count,
                                                  'query_result':query_result})
+@login_required
 def change_data(request):
     pub_id=request.POST['pub_id']
     p=Patent.objects.get(pk=pub_id)
@@ -250,7 +257,22 @@ def change_data(request):
 
     add_same_family_patents(p,row['same_family_patent'])
 
+@login_required
+def del_data(request):
+    pub_id=request.POST['pub_id']
+    return_dict={'success':1}
+    try:
+        patent=Patent.objects.get(pk=pub_id)
+        patent.delete()
+    except Exception as e:
+        print(e)
+        return_dict['success']=0
 
+    return HttpResponse(json.dumps(return_dict))
+def get_notes(patent):
+    notes=Note.objects.filter(patent=patent)
+    return notes
+@login_required
 def show_data(request):
     if request.method=='POST':
         change_data(request)
@@ -261,22 +283,28 @@ def show_data(request):
             patent=Patent.objects.get(pk=pub_id)
         except Exception as e:
             print(e)
-            return render(request,'main/show_message.html',{'message':'数据库中查不到本专利，请检查公开号'})
+            return render(request,'main/show_message.html',
+                          {'message':'数据库中查不到本专利，请检查公开号'})
 
         applicant_str=';'.join([a.name for a in patent.applicants.all()])
         nation_str=','.join([a.name for a in patent.nations.all()])
         family_patents=FamilyFatent.objects.filter(patent=patent)
         family_patent_str=';'.join([a.same_family_patent for a in family_patents])
+
+        notes=get_notes(patent)
         return_dict={
             'item':patent,
             'applicant_str':applicant_str,
             'nation_str':nation_str,
             'family_patent_str':family_patent_str,
+            'notes':notes,
 
             'patent_types':PATENT_TYPES,
+            'note_types':NOTE_TYPE,
         }
         return render(request,'main/detail.html',return_dict)
 
+@login_required
 def view_file(request,pub_id):
     patent=Patent.objects.get(pk=pub_id)
     #print(patent.pdf_file.name)
@@ -289,5 +317,19 @@ def view_file(request,pub_id):
     #response['Content-Disposition'] = 'attachment; filename=%s' % filename
 
     return response
+NOTE_TYPE=(
+    (0,'公有'),
+    (1,'私有'),
+)
+def add_notes(request):
+    user=request.user
+    note=request.POST['note']
+    type=request.POST['note_type']
+    pub_id=request.POST['patent_id']
+    try:
+        Note.objects.create(patent_id=pub_id,user=user,note=note,type=type)
+    except Exception as e:
+        print(e)
+    return HttpResponse('success')
 
 # Create your views here.

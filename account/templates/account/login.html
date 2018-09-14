@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {% load static %}
+    <link type="text/css" href="{% static "main/css/bootstrap.min.css"%}" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+    {% load static %}
+    <script src="{% static "main/js/bootstrap.min.js" %}"></script>
+
+    {% load static %}
+    <link type="text/css" rel="stylesheet" href="{% static "main/css/index.css" %}">
+
+</head>
+<body>
+<main class="container mt-5">
+    <div class="row d-flex justify-content-center">
+        <div class="card bg-light  px-3">
+            <div class="card-header d-flex justify-content-center pb-0  bg-light border-0">
+                <h1 class="display-1"><i class="fas fa-user-circle " style="color: #808080;"></i></h1>
+            </div>
+            <div class="card-body py-0">
+                <form action="{% url 'account:login' %}" method="post">
+                    {% csrf_token %}
+                <div class="form-group">
+                    <h6 for="usr" class="">用户名:</h6>
+                    <input type="text" class="form-control" id="usr" name="username" required>
+                </div>
+                <div class="form-group">
+                    <h6 for="pwd" class="">密码:</h6>
+                    <input type="password" class="form-control" id="pwd" name="password" required>
+                    <input class="btn btn-block btn-lg mt-4 py-1 text-white"
+                           style="background:  #808080;" type="submit" value="提交">
+                    <input type="hidden" name="next" value="{{ next }}" />
+                </div>
+                </form>
+            </div>
+            <div class="card-footer  border-0 bg-light">
+                <h6 class="text-danger text-center">{{ error_message }}</h6>
+            </div>
+
+        </div>
+
+    </div>
+</main>
+</body>
+</html>

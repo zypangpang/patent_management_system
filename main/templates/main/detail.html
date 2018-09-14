@@ -17,6 +17,10 @@
     <script src="{% static "main/js/detail.js" %}"></script>
     {% load static %}
     <link type="text/css" rel="stylesheet" href="{% static "main/css/index.css" %}">
+    <script type="text/javascript">
+        window.CSRF_TOKEN = "{{ csrf_token }}";
+        DEL_URL="{% url 'main:del' %}"
+    </script>
 </head>
 <body>
 <nav class="navbar navbar-expand-md bg-white navbar-light my-4 px-3 py-0">
@@ -72,7 +76,8 @@
 
       <!-- Modal body -->
       <div class="modal-body">
-          确定删除公开号为 {{ item.pub_id }} 的专利吗？此操作不可恢复
+          确定删除公开号为 <span class="text-danger">{{ item.pub_id }}</span> 的专利吗？
+          <span class="text-danger">此操作不可恢复!</spant>
       </div>
 
       <!-- Modal footer -->
@@ -84,6 +89,27 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="delInfoModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">信息</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body" id="del_info_text">
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="container">
     <div class="row">
         <div class="col-sm-10 px-0 m-0">
@@ -91,7 +117,7 @@
         </div>
         <div class="col-sm-2 p-1 m-0 d-flex justify-content-end">
             <button id="change_btn" type="button" class="btn btn-primary mx-2">修改</button>
-            <a target="_blank" href="{% url 'view_file' item.pub_id %}" id="view_file_btn" role="button" class="btn btn-primary mx-2">查看文件</a>
+            <a target="_blank" href="{% url 'main:view_file' item.pub_id %}" id="view_file_btn" role="button" class="btn btn-primary mx-2">查看文件</a>
             <button id="del_btn" type="button" class="btn btn-danger mx-2"
                     data-toggle="modal" data-target="#delModal">删除</button>
         </div>
@@ -291,6 +317,49 @@
                <input type="submit" id="submit_btn" hidden class="form-control m-0">
         </div>
     </form>
+    <div class="row my-2 px-2">
+        <h4 class="mx-2 p-0">用户批注</h4>
+    </div>
+
+    {% for note in notes %}
+    <div class="row mb-3 px-1">
+                <div class="col-2 bkg-profile-color p-0 d-flex flex-column justify-content-center ">
+                        <!--<img class="img-fluid mb-3" src="/static/img/img_avatar{{host_gender}}.png" alt="profile avatar">-->
+                        <strong class="break-word text-center p-1 ">{{ note.user }}</strong>
+                </div>
+                <div class="col-10 bkg-white-color border-0 d-flex flex-column ">
+                    <p class="my-1 break-word">{{ note.note | linebreaksbr}}</p>
+                    <!--<div class="d-flex mt-auto justify-content-end align-items-center">
+                        <p class="font-small p-0 m-0 mr-2 text-secondary">1楼</p>
+                        <p class="font-small p-0 m-0 mr-2 text-secondary" hidden id="hostThreadId">{{host_id}}</p>
+                        <p class="font-small p-0 m-0 mr-2 text-secondary">{{host_time|date:"Y-m-d H:i"}}</p>
+                        <button class="btn no-background rounded-0 font-small p-0 px-1 text-primary replyHostBtn" style="height: 25px;">回复</button>
+                    </div>-->
+                </div>
+            </div>
+    {% endfor %}
+
+    <div class="row mb-3 px-1">
+        <div class="col-12 d-flex flex-column p-0">
+            <form action="{% url 'main:add_notes' %}" method="post" id="replyToHostForm">
+                {% csrf_token %}
+            <input hidden name="patent_id" value="{{ item.pub_id }}">
+                <textarea name="note" required id="replyContent"  rows="5"
+                          class="form-control rounded-0 border-0 m-0" placeholder="批注内容"></textarea>
+                <div class="d-flex flex-row justify-content-end py-2">
+                    <!--<label for="sel1">Select list:</label>-->
+                    <select class="form-control w-auto mx-2" id="sel1" name="note_type">
+                        {% for val,text in note_types %}
+                            <option value="{{ val }}">{{ text }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="form-control btn btn-primary col-2 p-1"  >发表</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
     <!--<form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form }}

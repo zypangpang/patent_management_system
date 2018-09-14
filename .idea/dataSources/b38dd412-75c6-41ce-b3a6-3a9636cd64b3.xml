@@ -973,8 +973,8 @@
     <table id="250" parent="3" name="django_session"/>
     <table id="251" parent="3" name="main_applicant"/>
     <table id="252" parent="3" name="main_familyfatent"/>
-    <table id="253" parent="3" name="main_file_test"/>
-    <table id="254" parent="3" name="main_nation"/>
+    <table id="253" parent="3" name="main_nation"/>
+    <table id="254" parent="3" name="main_note"/>
     <table id="255" parent="3" name="main_patent"/>
     <table id="256" parent="3" name="main_patent_applicants"/>
     <table id="257" parent="3" name="main_patent_nations"/>
@@ -1494,254 +1494,276 @@ model</ColNames>
       <RefTableName>main_patent</RefTableName>
       <RefColNames>pub_id</RefColNames>
     </foreign-key>
-    <column id="349" parent="253" name="id">
+    <column id="349" parent="253" name="name">
+      <Position>1</Position>
+      <DataType>varchar(5)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="350" parent="253" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>name</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="351" parent="254" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="350" parent="253" name="name">
+    <column id="352" parent="254" name="note">
       <Position>2</Position>
-      <DataType>varchar(100)|0s</DataType>
+      <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="351" parent="253" name="file">
+    <column id="353" parent="254" name="type">
       <Position>3</Position>
-      <DataType>varchar(100)|0s</DataType>
+      <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="352" parent="253" name="PRIMARY">
+    <column id="354" parent="254" name="user_id">
+      <Position>4</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="355" parent="254" name="pub_date">
+      <Position>5</Position>
+      <DataType>date|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <index id="356" parent="254" name="main_note_user_id_fb47e0a2_fk_auth_user_id">
+      <ColNames>user_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="357" parent="254" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="353" parent="254" name="name">
-      <Position>1</Position>
-      <DataType>varchar(5)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <key id="354" parent="254" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <ColNames>name</ColNames>
-      <Primary>1</Primary>
-    </key>
-    <column id="355" parent="255" name="title">
+    <foreign-key id="358" parent="254" name="main_note_user_id_fb47e0a2_fk_auth_user_id">
+      <ColNames>user_id</ColNames>
+      <RefSchemaName>mydatabase</RefSchemaName>
+      <RefTableName>auth_user</RefTableName>
+      <RefColNames>id</RefColNames>
+    </foreign-key>
+    <column id="359" parent="255" name="title">
       <Position>1</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="356" parent="255" name="title_cn">
+    <column id="360" parent="255" name="title_cn">
       <Position>2</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="357" parent="255" name="abstract">
+    <column id="361" parent="255" name="abstract">
       <Position>3</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="358" parent="255" name="abstract_cn">
+    <column id="362" parent="255" name="abstract_cn">
       <Position>4</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="359" parent="255" name="index">
+    <column id="363" parent="255" name="index">
       <Position>5</Position>
       <DataType>varchar(60)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="360" parent="255" name="pub_id">
+    <column id="364" parent="255" name="pub_id">
       <Position>6</Position>
       <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="361" parent="255" name="pub_date">
+    <column id="365" parent="255" name="pub_date">
       <Position>7</Position>
       <DataType>date|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="362" parent="255" name="application_id">
+    <column id="366" parent="255" name="application_id">
       <Position>8</Position>
       <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="363" parent="255" name="application_date">
+    <column id="367" parent="255" name="application_date">
       <Position>9</Position>
       <DataType>date|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="364" parent="255" name="patent_type">
+    <column id="368" parent="255" name="patent_type">
       <Position>10</Position>
-      <DataType>int(11)|0s</DataType>
+      <DataType>varchar(40)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="365" parent="255" name="cat_id">
+    <column id="369" parent="255" name="cat_id">
       <Position>11</Position>
       <DataType>varchar(50)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="366" parent="255" name="branch1">
+    <column id="370" parent="255" name="branch1">
       <Position>12</Position>
       <DataType>varchar(60)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="367" parent="255" name="branch2">
+    <column id="371" parent="255" name="branch2">
       <Position>13</Position>
       <DataType>varchar(60)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="368" parent="255" name="branch3">
+    <column id="372" parent="255" name="branch3">
       <Position>14</Position>
       <DataType>varchar(60)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="369" parent="255" name="invent_desc">
+    <column id="373" parent="255" name="invent_desc">
       <Position>15</Position>
       <DataType>varchar(200)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="370" parent="255" name="tech_prob">
+    <column id="374" parent="255" name="tech_prob">
       <Position>16</Position>
       <DataType>varchar(200)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="371" parent="255" name="pdf_file">
+    <column id="375" parent="255" name="pdf_file">
       <Position>17</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="372" parent="255" name="application_id">
+    <index id="376" parent="255" name="application_id">
       <ColNames>application_id</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <key id="373" parent="255" name="PRIMARY">
+    <key id="377" parent="255" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>pub_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="374" parent="255" name="application_id">
+    <key id="378" parent="255" name="application_id">
       <ColNames>application_id</ColNames>
       <UnderlyingIndexName>application_id</UnderlyingIndexName>
     </key>
-    <column id="375" parent="256" name="id">
+    <column id="379" parent="256" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="376" parent="256" name="patent_id">
+    <column id="380" parent="256" name="patent_id">
       <Position>2</Position>
       <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="377" parent="256" name="applicant_id">
+    <column id="381" parent="256" name="applicant_id">
       <Position>3</Position>
       <DataType>varchar(50)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="378" parent="256" name="main_patent_applicants_patent_id_applicant_id_1204633a_uniq">
+    <index id="382" parent="256" name="main_patent_applicants_patent_id_applicant_id_1204633a_uniq">
       <ColNames>patent_id
 applicant_id</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <index id="379" parent="256" name="main_patent_applican_applicant_id_91e4278b_fk_main_appl">
+    <index id="383" parent="256" name="main_patent_applican_applicant_id_91e4278b_fk_main_appl">
       <ColNames>applicant_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="380" parent="256" name="PRIMARY">
+    <key id="384" parent="256" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="381" parent="256" name="main_patent_applicants_patent_id_applicant_id_1204633a_uniq">
+    <key id="385" parent="256" name="main_patent_applicants_patent_id_applicant_id_1204633a_uniq">
       <ColNames>patent_id
 applicant_id</ColNames>
       <UnderlyingIndexName>main_patent_applicants_patent_id_applicant_id_1204633a_uniq</UnderlyingIndexName>
     </key>
-    <foreign-key id="382" parent="256" name="main_patent_applicants_patent_id_1065ffbc_fk_main_patent_pub_id">
+    <foreign-key id="386" parent="256" name="main_patent_applicants_patent_id_1065ffbc_fk_main_patent_pub_id">
       <ColNames>patent_id</ColNames>
       <RefSchemaName>mydatabase</RefSchemaName>
       <RefTableName>main_patent</RefTableName>
       <RefColNames>pub_id</RefColNames>
     </foreign-key>
-    <foreign-key id="383" parent="256" name="main_patent_applican_applicant_id_91e4278b_fk_main_appl">
+    <foreign-key id="387" parent="256" name="main_patent_applican_applicant_id_91e4278b_fk_main_appl">
       <ColNames>applicant_id</ColNames>
       <RefSchemaName>mydatabase</RefSchemaName>
       <RefTableName>main_applicant</RefTableName>
       <RefColNames>name</RefColNames>
     </foreign-key>
-    <column id="384" parent="257" name="id">
+    <column id="388" parent="257" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="385" parent="257" name="patent_id">
+    <column id="389" parent="257" name="patent_id">
       <Position>2</Position>
       <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="386" parent="257" name="nation_id">
+    <column id="390" parent="257" name="nation_id">
       <Position>3</Position>
       <DataType>varchar(5)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="387" parent="257" name="main_patent_nations_patent_id_nation_id_c468a32e_uniq">
+    <index id="391" parent="257" name="main_patent_nations_patent_id_nation_id_c468a32e_uniq">
       <ColNames>patent_id
 nation_id</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <index id="388" parent="257" name="main_patent_nations_nation_id_640403bc_fk_main_nation_name">
+    <index id="392" parent="257" name="main_patent_nations_nation_id_640403bc_fk_main_nation_name">
       <ColNames>nation_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="389" parent="257" name="PRIMARY">
+    <key id="393" parent="257" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="390" parent="257" name="main_patent_nations_patent_id_nation_id_c468a32e_uniq">
+    <key id="394" parent="257" name="main_patent_nations_patent_id_nation_id_c468a32e_uniq">
       <ColNames>patent_id
 nation_id</ColNames>
       <UnderlyingIndexName>main_patent_nations_patent_id_nation_id_c468a32e_uniq</UnderlyingIndexName>
     </key>
-    <foreign-key id="391" parent="257" name="main_patent_nations_patent_id_8e42bcae_fk_main_patent_pub_id">
+    <foreign-key id="395" parent="257" name="main_patent_nations_patent_id_8e42bcae_fk_main_patent_pub_id">
       <ColNames>patent_id</ColNames>
       <RefSchemaName>mydatabase</RefSchemaName>
       <RefTableName>main_patent</RefTableName>
       <RefColNames>pub_id</RefColNames>
     </foreign-key>
-    <foreign-key id="392" parent="257" name="main_patent_nations_nation_id_640403bc_fk_main_nation_name">
+    <foreign-key id="396" parent="257" name="main_patent_nations_nation_id_640403bc_fk_main_nation_name">
       <ColNames>nation_id</ColNames>
       <RefSchemaName>mydatabase</RefSchemaName>
       <RefTableName>main_nation</RefTableName>

@@ -1,5 +1,6 @@
 import datetime
 from django.db import models
+from django.contrib.auth.models import User
 
 def pdf_directory_path(instance,filename):
     year=datetime.datetime.strptime(instance.pub_date,"%Y-%m-%d").year
@@ -52,6 +53,23 @@ class Patent(models.Model):
 class FamilyFatent(models.Model):
     patent = models.ForeignKey(Patent, on_delete=models.CASCADE)
     same_family_patent=models.CharField(max_length=20)
+
+class Note(models.Model):
+    class Meta:
+        permissions = (
+            ("view_private_notes", "可以查看其它人的私有批注"),
+        )
+
+    patent=models.ForeignKey(Patent,on_delete=models.CASCADE)
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    note=models.TextField()
+    type=models.IntegerField(
+        choices=(
+            (0,'公有'),
+            (1,'私有'),
+        )
+    )
+    pub_date=models.DateField(auto_now=True)
 
 # nation should have choices
 #class family_nation(models.Model):

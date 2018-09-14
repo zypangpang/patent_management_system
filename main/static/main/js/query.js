@@ -22,7 +22,7 @@ $(function () {
         console.log('my submit');
 
         $.ajax({
-            type: frm.attr('method'),
+            method: frm.attr('method'),
             url: frm.attr('action'),
             data: frm.serialize(), // serializes the form's elements.
             success: function(data)

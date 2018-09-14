@@ -46,8 +46,15 @@
                     </a>
                 </div>
             </li>
-            <li class="nav-item">
-                <a class="nav-link p-3" href="#">Link</a>
+            <li class="nav-item dropdown">
+                <a class="nav-link p-3 " href="" data-toggle="dropdown">
+                    {{ user_name }}
+                </a>
+                <div class="dropdown-menu border-0 rounded-0 m-0 py-0 ">
+                    <a class="dropdown-item px-3 py-2" href="{% url 'account:logout' %}">
+                        登出
+                    </a>
+                </div>
             </li>
             <li class="nav-item">
                 <a class="nav-link p-3" href="#">Link</a>
@@ -105,17 +112,12 @@
                 {% for item in query_result %}
                     <tr>
                         {% for field in item %}
-                            <td><a class="text-black" href="{% url 'detail' %}?pub_id={{ item.2 }}">{{ field }}</a></td>
+                            <td><a class="text-black" href="{% url 'main:detail' %}?pub_id={{ item.2 }}">{{ field }}</a></td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
-            <!--<ul class="list-group">
-                {% for item in query_result %}
-                    <li class="list-group-item ">{{ item.title }}</li>
-                {% endfor %}
-            </ul>-->
         </div>
     </div>
 </div>
