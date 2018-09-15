@@ -1,10 +1,11 @@
-import datetime
+import datetime,os
+from django.dispatch import receiver
 from django.db import models
 from django.contrib.auth.models import User
 
 def pdf_directory_path(instance,filename):
-    year=datetime.datetime.strptime(instance.pub_date,"%Y-%m-%d").year
-    return f'patent_pdf/{year}/{instance.pub_id}.pdf'
+    #year=datetime.datetime.strptime(instance.pub_date,"%Y-%m-%d").year
+    return f'patent_pdf/{instance.pub_id}.pdf'
 def test_dir_path(instance,filename):
     return f'test_pdf/{instance.name}.pdf'
 
@@ -70,6 +71,37 @@ class Note(models.Model):
         )
     )
     pub_date=models.DateField(auto_now=True)
+
+@receiver(models.signals.post_delete, sender=Patent)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    """
+    Deletes file from filesystem
+    when corresponding `MediaFile` object is deleted.
+    """
+    if instance.pdf_file:
+        if os.path.isfile(instance.pdf_file.path):
+            os.remove(instance.pdf_file.path)
+
+#@receiver(models.signals.pre_save, sender=MediaFile)
+#def auto_delete_file_on_change(sender, instance, **kwargs):
+#    """
+#    Deletes old file from filesystem
+#    when corresponding `MediaFile` object is updated
+#    with new file.
+#    """
+#    if not instance.pk:
+#        return False
+#
+#    try:
+#        old_file = MediaFile.objects.get(pk=instance.pk).file
+#    except MediaFile.DoesNotExist:
+#        return False
+#
+#    new_file = instance.file
+#    if not old_file == new_file:
+#        if os.path.isfile(old_file.path):
+#            os.remove(old_file.path)
+
 
 # nation should have choices
 #class family_nation(models.Model):

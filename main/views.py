@@ -21,8 +21,9 @@ def find(a, x):
     i = bisect.bisect_left(a, x)
     if i != len(a) and a[i] == x:
         return i
-    raise -1
-def add_patent_from_row(zh_cn,row,request_files):
+    return -1
+def add_patent_from_row(zh_cn,row,pdf_file):
+    error_patents=[]
     if zh_cn:
         applicants,nations=add_applicants_and_nations(row['申请人'], row['同族国家'])
         p=Patent(title=row['标题'],title_cn=row['标题（翻译）'],abstract=row['摘要'],
@@ -30,7 +31,7 @@ def add_patent_from_row(zh_cn,row,request_files):
                          branch2=row['二级分支'],branch3=row['三级分支'],invent_desc=row['发明点'],
                          tech_prob=row['技术问题'],pub_id=row['公开（公告）号'],pub_date=row['公开（公告）日'].replace('/','-'),
                          application_id=row['申请号'],application_date=row['申请日'].replace('/','-'),
-                       patent_type=row['专利类型'],cat_id=row['主分类号'])
+                       patent_type=row['专利类型'],cat_id=row['主分类号'],pdf_file=pdf_file)
     else:
         applicants,nations=add_applicants_and_nations(row['applicants'], row['nations'])
         p=Patent(title=row['title'],title_cn=row['title_cn'],abstract=row['abstract'],
@@ -38,18 +39,25 @@ def add_patent_from_row(zh_cn,row,request_files):
                          branch2=row['branch2'],branch3=row['branch3'],invent_desc=row['invent_desc'],
                          tech_prob=row['tech_prob'],pub_id=row['pub_id'],pub_date=row['pub_date'].replace('/','-'),
                          application_id=row['application_id'],application_date=row['application_date'].replace('/','-'),
-                       patent_type=row['patent_type'],cat_id=row['cat_id'],pdf_file=request_files['pdf_file'])
+                       patent_type=row['patent_type'],cat_id=row['cat_id'],pdf_file=pdf_file)
     #if request_files:
     #    p.pdf_file=request_files['pdf_file']
-    p.save()
-    for applicant in applicants:
-        p.applicants.add(applicant)
-    for nation in nations:
-        p.nations.add(nation)
-    if(zh_cn):
-        add_same_family_patents(p,row['简单同族'])
+    try:
+        p.save()
+    except Exception as e:
+        error_patents.append(p.pub_id)
+        print(e)
     else:
-        add_same_family_patents(p,row['same_family_patent'])
+        for applicant in applicants:
+            p.applicants.add(applicant)
+        for nation in nations:
+            p.nations.add(nation)
+        if(zh_cn):
+            add_same_family_patents(p,row['简单同族'])
+        else:
+            add_same_family_patents(p,row['same_family_patent'])
+
+    return error_patents
 
 
 def add_patents_from_csv_and_pdfs(csv_file,pdf_files):
@@ -62,15 +70,18 @@ def add_patents_from_csv_and_pdfs(csv_file,pdf_files):
     for row in f_csv:
         pub_id=row['公开（公告）号']
         t=find(pdf_names,pub_id+'.pdf')
-        print(pdf_files[t].name)
+        #print(pdf_files[t].name)
         if t!=-1:
-            add_patent_from_row(True,row,pdf_files[t])
+            error_patents=add_patent_from_row(True,row,pdf_files[t])
 
             ####### 此处正式应用时删除###########
-            break
+            #break
             ###########################
         else:
-            error_messages.append(pub_id+" no file!")
+            error_messages.append(pub_id+" 没有文件!\n")
+
+        for error_id in error_patents:
+            error_messages.append(error_id+"出错!")
 
     return error_messages
 
@@ -79,10 +90,11 @@ def add_same_family_patents(patent,same_family_str):
     same_family_patents=same_family_str.split(';')
     for sfpatent in same_family_patents:
         sfpatent=sfpatent.strip()
-        try:
-            FamilyFatent(patent=patent, same_family_patent=sfpatent).save()
-        except Exception as e:
-            print(e)
+        if sfpatent:
+            try:
+                FamilyFatent(patent=patent, same_family_patent=sfpatent).save()
+            except Exception as e:
+                print(e)
 
 def add_applicants_and_nations(applicant_str, nation_str):
     applicants=applicant_str.split(';')
@@ -90,14 +102,16 @@ def add_applicants_and_nations(applicant_str, nation_str):
     nation_list=[]
     for applicant in applicants:
         a=applicant.strip()
-        obj,created=Applicant.objects.get_or_create(name=a)
-        applicant_list.append(obj)
+        if a:
+            obj,created=Applicant.objects.get_or_create(name=a)
+            applicant_list.append(obj)
 
     nations=nation_str.split(',')
     for nation in nations:
         nation=nation.strip()
-        obj,created=Nation.objects.get_or_create(name=nation)
-        nation_list.append(obj)
+        if nation:
+            obj,created=Nation.objects.get_or_create(name=nation)
+            nation_list.append(obj)
 
     return applicant_list,nation_list
 
@@ -112,7 +126,7 @@ def add_data(request):
         #1 for success 2 for failure 0 for default
         message='添加成功'
         try:
-            add_patent_from_row(False,request.POST,request.FILES)
+            add_patent_from_row(False,request.POST,request.FILES['pdf_file'])
         except Exception as e:
             print(e)
             message='添加失败'
@@ -208,7 +222,7 @@ def query_data(request):
                                                               'show_fields':SHOW_FIELDS,
                                                               'result_count':result_count})
     else:
-        query_raw_result=Patent.objects.all()[:50]
+        query_raw_result=Patent.objects.all()[:100]
         query_result=[]
         for item in query_raw_result:
             applicant_str=';'.join([a.name for a in item.applicants.all()])
