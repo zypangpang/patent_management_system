@@ -1,6 +1,7 @@
 import csv,bisect,json
+from django.contrib.auth.models import User
 from django.db.models import Q
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,reverse
 from .models import Nation,Applicant,FamilyFatent,Patent,Note
 from django.contrib.auth.decorators import login_required
 
@@ -102,7 +103,7 @@ def add_applicants_and_nations(applicant_str, nation_str):
 
 @login_required
 def index(request):
-    return HttpResponse("hello")
+    return redirect(reverse('main:query'))
 
 @login_required
 def add_data(request):
@@ -116,6 +117,7 @@ def add_data(request):
             print(e)
             message='添加失败'
         return render(request, 'main/add.html', {'patent_types':PATENT_TYPES,
+                                                 'user_name':request.user.get_username(),
                                                  'message':message})
         '''if form.is_valid():
             patent=form.save()
@@ -128,6 +130,7 @@ def add_data(request):
             return HttpResponse("form not valid")'''
     else:
         return render(request, 'main/add.html', {'patent_types':PATENT_TYPES,
+                                                 'user_name':request.user.get_username(),
                                                  'message':''})
 
 @login_required
@@ -142,11 +145,16 @@ def import_data(request):
             #test_file=file_test(name='hello',file=f)
             #test_file.save()
         if errors:
-            return HttpResponse('\n'.join(errors))
-        return HttpResponse('success')
+            return render(request,'main/show_message.html',{'message':'\n'.join(errors),
+                                                            'success':0})
+
+        return render(request,'main/show_message.html',{'message':'数据导入成功',
+                                                        'success':1})
 
     else:
-        return render(request,'main/import.html')
+        return render(request,'main/import.html',{
+            'user_name':request.user.get_username(),
+        })
 
 QUERY_FIELDS=(
     ('title','标题'),('title_cn','标题（翻译）'),('abstract','摘要'),
@@ -269,14 +277,20 @@ def del_data(request):
         return_dict['success']=0
 
     return HttpResponse(json.dumps(return_dict))
-def get_notes(patent):
-    notes=Note.objects.filter(patent=patent)
+def get_notes(user,patent):
+    #print(user.groups.all())
+    if user.has_perm('main.view_private_notes'):
+        notes=Note.objects.filter(patent=patent)
+    else:
+        notes=Note.objects.filter(patent=patent,type=0) | \
+              Note.objects.filter(patent=patent,user=user)
     return notes
 @login_required
 def show_data(request):
     if request.method=='POST':
         change_data(request)
-        return HttpResponse("success")
+        return render(request,'main/show_message.html',{'message':'数据修改成功',
+                                                        'success':1})
     else:
         pub_id=request.GET['pub_id']
         try:
@@ -284,20 +298,22 @@ def show_data(request):
         except Exception as e:
             print(e)
             return render(request,'main/show_message.html',
-                          {'message':'数据库中查不到本专利，请检查公开号'})
+                          {'message':'数据库中查不到本专利，请检查公开号',
+                           'success':0})
 
         applicant_str=';'.join([a.name for a in patent.applicants.all()])
         nation_str=','.join([a.name for a in patent.nations.all()])
         family_patents=FamilyFatent.objects.filter(patent=patent)
         family_patent_str=';'.join([a.same_family_patent for a in family_patents])
 
-        notes=get_notes(patent)
+        notes=get_notes(request.user,patent)
         return_dict={
             'item':patent,
             'applicant_str':applicant_str,
             'nation_str':nation_str,
             'family_patent_str':family_patent_str,
             'notes':notes,
+            'user_name':request.user.get_username(),
 
             'patent_types':PATENT_TYPES,
             'note_types':NOTE_TYPE,
@@ -313,7 +329,8 @@ def view_file(request,pub_id):
         filename = patent.pdf_file.name.split('/')[-1]
         response = HttpResponse(patent.pdf_file, content_type='application/pdf')
     else:
-        return render(request,'main/show_message.html',{'message':'该专利没有文件'})
+        return render(request,'main/show_message.html',{'message':'该专利没有文件',
+                                                        'success':0})
     #response['Content-Disposition'] = 'attachment; filename=%s' % filename
 
     return response
@@ -330,6 +347,8 @@ def add_notes(request):
         Note.objects.create(patent_id=pub_id,user=user,note=note,type=type)
     except Exception as e:
         print(e)
-    return HttpResponse('success')
+        return render(request,'main/show_message.html',{'message':'添加批注失败',
+                                                        'success':0})
+    return redirect(reverse("main:detail")+'?pub_id='+pub_id)
 
 # Create your views here.

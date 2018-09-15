@@ -19,7 +19,9 @@
 <body>
 <nav class="navbar navbar-expand-md bg-white navbar-light my-4 px-3 py-0">
     <!-- Brand -->
-    <a class="navbar-brand" href="#">专利在线管理系统</a>
+    <a class="navbar-brand" href="{% url 'main:index' %}">
+        <h5 class="p-0 m-0">专利管理系统</h5>
+    </a>
 
     <!-- Toggler/collapsibe Button -->
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
@@ -30,30 +32,36 @@
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item dropdown">
-                <a class="nav-link p-3 " href="" data-toggle="dropdown">
-                    数据库管理
+                <a class="nav-link p-4 " href="" data-toggle="dropdown">
+                    <h5 class="p-0 m-0">数据库管理</h5>
                 </a>
                 <div class="dropdown-menu border-0 rounded-0 m-0 py-0 ">
-                    <a class="dropdown-item px-3 py-2" href="/import/">
+                    <a class="dropdown-item px-3 py-2" href="{% url 'main:import' %}">
                         导入
                     </a>
-                    <a class="dropdown-item px-3 py-2" href="/add/">
+                    <a class="dropdown-item px-3 py-2" href="{% url 'main:add' %}">
                         新增
                     </a>
-                    <a class="dropdown-item px-3 py-2" href="/">
+                    <a class="dropdown-item px-3 py-2" href="{% url 'main:query' %}">
                         查询
                     </a>
                 </div>
             </li>
-            <li class="nav-item">
-                <a class="nav-link p-3" href="#">Link</a>
+            <li class="nav-item dropdown">
+                <a class="nav-link p-4 " href="" data-toggle="dropdown">
+                    <h5 class="p-0 m-0">{{ user_name }}</h5>
+                </a>
+                <div class="dropdown-menu border-0 rounded-0 m-0 py-0 ">
+                    <a class="dropdown-item px-3 py-2" href="{% url 'account:logout' %}">
+                        登出
+                    </a>
+                </div>
             </li>
-            <li class="nav-item">
-                <a class="nav-link p-3" href="#">Link</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link p-3" href="#">Link</a>
-            </li>
+            <!--<li class="nav-item">
+                <a class="nav-link p-4" href="#">
+                    <h5 class="p-0 m-0">备用</h5>
+                </a>
+            </li>-->
         </ul>
     </div>
 </nav>
@@ -278,8 +286,8 @@
             </div>
         </div>
 
-        <div class="row my-2 px-2">
-               <input type="submit" class="form-control m-0">
+        <div class="row my-2 px-2 justify-content-end">
+               <input type="submit" class="btn btn-primary px-5 m-0">
         </div>
     </form>
     <!--<form action="" method="post" enctype="multipart/form-data">
