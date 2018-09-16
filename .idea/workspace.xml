@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cfee249f-2a16-4596-a0c7-dfb4a4ce5ebf" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/main/query.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/query.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/templates/main/query_result_table.html" beforeDir="false" afterPath="$PROJECT_DIR$/main/templates/main/query_result_table.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -73,7 +73,7 @@
           <entry key="auth_user_user_permissions" value="1" />
           <entry key="css" value="6" />
           <entry key="django_admin_log" value="1" />
-          <entry key="html" value="30" />
+          <entry key="html" value="32" />
           <entry key="js" value="8" />
           <entry key="main_applicant" value="2" />
           <entry key="main_apply_patent" value="4" />
@@ -94,7 +94,7 @@
         <counts>
           <entry key="CSS" value="6" />
           <entry key="Database Element" value="65" />
-          <entry key="HTML" value="30" />
+          <entry key="HTML" value="32" />
           <entry key="JavaScript" value="8" />
           <entry key="Python" value="37" />
           <entry key="Scratch" value="1" />
@@ -106,9 +106,9 @@
           <entry key="cell" value="55" />
           <entry key="css" value="1801" />
           <entry key="dummy" value="43" />
-          <entry key="html" value="61136" />
+          <entry key="html" value="61298" />
           <entry key="js" value="4379" />
-          <entry key="py" value="57814" />
+          <entry key="py" value="59043" />
           <entry key="sql" value="21" />
           <entry key="txt" value="41" />
         </counts>
@@ -116,10 +116,10 @@
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CSS" value="1801" />
-          <entry key="HTML" value="61136" />
+          <entry key="HTML" value="61298" />
           <entry key="JavaScript" value="4379" />
           <entry key="PLAIN_TEXT" value="84" />
-          <entry key="Python" value="57865" />
+          <entry key="Python" value="59094" />
           <entry key="Scratch" value="76" />
         </counts>
       </usages-collector>
@@ -130,13 +130,31 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="108">
-              <caret line="386" column="28" selection-start-line="386" selection-start-column="28" selection-end-line="386" selection-end-column="28" />
+            <state relative-caret-position="486">
+              <caret line="258" column="23" selection-start-line="258" selection-start-column="23" selection-end-line="258" selection-end-column="23" />
               <folding>
                 <element signature="e#0#22#0" expanded="true" />
-                <marker date="1537065087142" expanded="true" signature="829:830" ph="..." />
-                <marker date="1537065087142" expanded="true" signature="873:2047" ph="..." />
+                <marker date="1537066324835" expanded="true" signature="829:830" ph="..." />
+                <marker date="1537066324835" expanded="true" signature="873:2089" ph="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/main/templates/main/query_result_table.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="162">
+              <caret line="6" column="28" selection-start-line="6" selection-start-column="28" selection-end-line="6" selection-end-column="28" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/main/templates/main/query.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="405">
+              <caret line="98" column="42" selection-start-line="98" selection-start-column="42" selection-end-line="98" selection-end-column="42" />
             </state>
           </provider>
         </entry>
@@ -234,13 +252,13 @@
         <option value="$PROJECT_DIR$/account/templates/account/login.html" />
         <option value="$PROJECT_DIR$/account/urls.py" />
         <option value="$PROJECT_DIR$/main/urls.py" />
-        <option value="$PROJECT_DIR$/main/templates/main/query_result_table.html" />
         <option value="$PROJECT_DIR$/main/templates/main/show_message.html" />
         <option value="$PROJECT_DIR$/main/templates/main/add.html" />
         <option value="$PROJECT_DIR$/main/templates/main/detail.html" />
-        <option value="$PROJECT_DIR$/main/templates/main/query.html" />
         <option value="$PROJECT_DIR$/main/templates/main/import.html" />
         <option value="$PROJECT_DIR$/main/models.py" />
+        <option value="$PROJECT_DIR$/main/templates/main/query_result_table.html" />
+        <option value="$PROJECT_DIR$/main/templates/main/query.html" />
         <option value="$PROJECT_DIR$/main/views.py" />
       </list>
     </option>
@@ -420,6 +438,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="31" width="1922" height="1050" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49805447" visible="true" weight="0.2713053" />
       <window_info id="Structure" order="1" sideWeight="0.5019455" side_tool="true" weight="0.22648649" />
@@ -624,13 +643,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main/templates/main/query_result_table.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="243">
-          <caret line="14" column="72" selection-start-line="14" selection-start-column="72" selection-end-line="14" selection-end-column="72" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/account/templates/account/login.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1053">
@@ -649,13 +661,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="405">
           <caret line="363" column="48" selection-start-line="363" selection-start-column="48" selection-end-line="363" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main/templates/main/query.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="92" column="25" selection-start-line="92" selection-start-column="25" selection-end-line="92" selection-end-column="25" />
         </state>
       </provider>
     </entry>
@@ -725,14 +730,28 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/main/templates/main/query_result_table.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="6" column="28" selection-start-line="6" selection-start-column="28" selection-end-line="6" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main/templates/main/query.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="98" column="42" selection-start-line="98" selection-start-column="42" selection-end-line="98" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="108">
-          <caret line="386" column="28" selection-start-line="386" selection-start-column="28" selection-end-line="386" selection-end-column="28" />
+        <state relative-caret-position="486">
+          <caret line="258" column="23" selection-start-line="258" selection-start-column="23" selection-end-line="258" selection-end-column="23" />
           <folding>
             <element signature="e#0#22#0" expanded="true" />
-            <marker date="1537065087142" expanded="true" signature="829:830" ph="..." />
-            <marker date="1537065087142" expanded="true" signature="873:2047" ph="..." />
+            <marker date="1537066324835" expanded="true" signature="829:830" ph="..." />
+            <marker date="1537066324835" expanded="true" signature="873:2089" ph="..." />
           </folding>
         </state>
       </provider>

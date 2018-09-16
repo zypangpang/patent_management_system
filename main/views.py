@@ -244,7 +244,8 @@ def query_data(request):
             else:
                 QObject &=Q(**{query_field+'__icontains':query_text})
         query_raw_result=Patent.objects.filter(QObject).distinct()
-        if len(query_raw_result)>100:
+        result_length=len(query_raw_result)
+        if result_length>100:
             query_raw_result=query_raw_result[:100]
         query_result=[]
         for item in query_raw_result:
@@ -253,10 +254,9 @@ def query_data(request):
             query_result.append([item.title,item.title_cn,item.pub_id,item.pub_date.strftime('%Y-%m-%d'),
                                  item.application_id,item.application_date.strftime('%Y-%m-%d'),applicant_str,
                                  item.patent_type])
-        result_length=len(query_raw_result)
         result_count=str(result_length)
         if(result_length>100):
-            result_count+=',只显示前100'
+            result_count+='，只显示前100'
 
         #return render(request,'main/query.html',{'query_fields':QUERY_FIELDS,
         #                                         'query_result':query_result,
@@ -266,7 +266,7 @@ def query_data(request):
                                                               'show_fields':SHOW_FIELDS,
                                                               'result_count':result_count})
     else:
-        query_raw_result=Patent.objects.all()[:100]
+        query_raw_result=Patent.objects.all()
         query_result=[]
         for item in query_raw_result:
             applicant_str=';'.join([a.name for a in item.applicants.all()])
@@ -277,7 +277,7 @@ def query_data(request):
         result_length=len(query_raw_result)
         result_count=str(result_length)
         if(result_length>100):
-            result_count+=',只显示前100'
+            result_count+='，只显示前100'
         return render(request,'main/query.html',{'query_fields':QUERY_FIELDS,
                                                  'show_fields':SHOW_FIELDS,
                                                  'user_name':request.user.get_username(),
