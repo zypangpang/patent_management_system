@@ -1,5 +1,8 @@
 import csv,bisect,json
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.files import File
+from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
 from django.shortcuts import render,redirect,reverse
 from .models import Nation,Applicant,FamilyFatent,Patent,Note
@@ -11,6 +14,7 @@ PATENT_TYPES=('不确定',
         '发明授权',
         '实用新型',
         '外观设计', )
+FILE_CACHE_DIR='patent_cache/'
 #PATENT_TYPE_DICT_REVERSE={0:'不确定',
 #        1:'发明申请',
 #        2:'发明授权',
@@ -22,42 +26,67 @@ def find(a, x):
     if i != len(a) and a[i] == x:
         return i
     return -1
-def add_patent_from_row(zh_cn,row,pdf_file):
-    error_patents=[]
-    if zh_cn:
-        applicants,nations=add_applicants_and_nations(row['申请人'], row['同族国家'])
-        p=Patent(title=row['标题'],title_cn=row['标题（翻译）'],abstract=row['摘要'],
-                         abstract_cn=row['摘要（翻译）'],index=row['标引'],branch1=row['一级分支'],
-                         branch2=row['二级分支'],branch3=row['三级分支'],invent_desc=row['发明点'],
-                         tech_prob=row['技术问题'],pub_id=row['公开（公告）号'],pub_date=row['公开（公告）日'].replace('/','-'),
-                         application_id=row['申请号'],application_date=row['申请日'].replace('/','-'),
-                       patent_type=row['专利类型'],cat_id=row['主分类号'],pdf_file=pdf_file)
-    else:
-        applicants,nations=add_applicants_and_nations(row['applicants'], row['nations'])
-        p=Patent(title=row['title'],title_cn=row['title_cn'],abstract=row['abstract'],
-                         abstract_cn=row['abstract_cn'],index=row['index'],branch1=row['branch1'],
-                         branch2=row['branch2'],branch3=row['branch3'],invent_desc=row['invent_desc'],
-                         tech_prob=row['tech_prob'],pub_id=row['pub_id'],pub_date=row['pub_date'].replace('/','-'),
-                         application_id=row['application_id'],application_date=row['application_date'].replace('/','-'),
-                       patent_type=row['patent_type'],cat_id=row['cat_id'],pdf_file=pdf_file)
+
+def add_patent_from_csv_row(row,pdf_file):
+    #error_id=''
+    #pdf_path=settings.MEDIA_ROOT+FILE_CACHE_DIR+row['公开（公告）号']+'.pdf'
+    p=Patent(title=row['标题'],title_cn=row['标题（翻译）'],abstract=row['摘要'],
+                     abstract_cn=row['摘要（翻译）'],index=row['标引'],branch1=row['一级分支'],
+                     branch2=row['二级分支'],branch3=row['三级分支'],invent_desc=row['发明点'],
+                     tech_prob=row['技术问题'],pub_id=row['公开（公告）号'],pub_date=row['公开（公告）日'].replace('/','-'),
+                     application_id=row['申请号'],application_date=row['申请日'].replace('/','-'),
+                   patent_type=row['专利类型'],cat_id=row['主分类号'],pdf_file=pdf_file)
+    p.save()
+
+    #codes below are for implementation 2
+    #if pdf_file:
+       # p.pdf_file=pdf_file
+       # may raise exception
+       # p.save()
+    #else:
+        # may raise exception
+    #    f=open(pdf_path, 'rb')
+    #    p.pdf_file=File(f)
+    #    p.save()
+    #    f.close()
+    applicants,nations=add_applicants_and_nations(row['申请人'], row['同族国家'])
+
     #if request_files:
     #    p.pdf_file=request_files['pdf_file']
-    try:
-        p.save()
-    except Exception as e:
-        error_patents.append(p.pub_id)
-        print(e)
-    else:
-        for applicant in applicants:
-            p.applicants.add(applicant)
-        for nation in nations:
-            p.nations.add(nation)
-        if(zh_cn):
-            add_same_family_patents(p,row['简单同族'])
-        else:
-            add_same_family_patents(p,row['same_family_patent'])
 
-    return error_patents
+    for applicant in applicants:
+        p.applicants.add(applicant)
+    for nation in nations:
+        p.nations.add(nation)
+
+    add_same_family_patents(p,row['简单同族'])
+
+
+def add_patent_from_row(row,pdf_file):
+    #error_patents=[]
+
+    p=Patent(title=row['title'],title_cn=row['title_cn'],abstract=row['abstract'],
+                     abstract_cn=row['abstract_cn'],index=row['index'],branch1=row['branch1'],
+                     branch2=row['branch2'],branch3=row['branch3'],invent_desc=row['invent_desc'],
+                     tech_prob=row['tech_prob'],pub_id=row['pub_id'],pub_date=row['pub_date'].replace('/','-'),
+                     application_id=row['application_id'],application_date=row['application_date'].replace('/','-'),
+                   patent_type=row['patent_type'],cat_id=row['cat_id'],pdf_file=pdf_file)
+    #if request_files:
+    #    p.pdf_file=request_files['pdf_file']
+
+    #may raise exception
+    p.save()
+
+    applicants,nations=add_applicants_and_nations(row['applicants'], row['nations'])
+
+    for applicant in applicants:
+        p.applicants.add(applicant)
+    for nation in nations:
+        p.nations.add(nation)
+
+    add_same_family_patents(p,row['same_family_patent'])
+
+    #return error_patents
 
 
 def add_patents_from_csv_and_pdfs(csv_file,pdf_files):
@@ -65,6 +94,19 @@ def add_patents_from_csv_and_pdfs(csv_file,pdf_files):
 
     f_csv = csv.DictReader(csv_file)
 
+    #implementation 1
+    '''for myfile in pdf_files:
+        fs = FileSystemStorage()
+        fs.save(FILE_CACHE_DIR+myfile.name, myfile)
+
+    for row in f_csv:
+        try:
+            add_patent_from_csv_row(row,None)
+        except Exception as e:
+            print(e)
+            error_messages.append(row['公开（公告）号']+"出错!")'''
+
+    #implementation 2
     pdf_files.sort(key=lambda file: file.name)
     pdf_names=[f.name for f in pdf_files]
     for row in f_csv:
@@ -72,16 +114,17 @@ def add_patents_from_csv_and_pdfs(csv_file,pdf_files):
         t=find(pdf_names,pub_id+'.pdf')
         #print(pdf_files[t].name)
         if t!=-1:
-            error_patents=add_patent_from_row(True,row,pdf_files[t])
+            try:
+                add_patent_from_csv_row(row,pdf_files[t])
+            except Exception as e:
+                print(e)
+                error_messages.append(pub_id+"出错!")
 
             ####### 此处正式应用时删除###########
             #break
             ###########################
         else:
             error_messages.append(pub_id+" 没有文件!\n")
-
-        for error_id in error_patents:
-            error_messages.append(error_id+"出错!")
 
     return error_messages
 
@@ -126,7 +169,8 @@ def add_data(request):
         #1 for success 2 for failure 0 for default
         message='添加成功'
         try:
-            add_patent_from_row(False,request.POST,request.FILES['pdf_file'])
+            add_patent_from_row(request.POST,request.FILES['pdf_file'])
+
         except Exception as e:
             print(e)
             message='添加失败'
@@ -338,16 +382,18 @@ def show_data(request):
 def view_file(request,pub_id):
     patent=Patent.objects.get(pk=pub_id)
     #print(patent.pdf_file.name)
-    filename=''
-    if patent.pdf_file:
-        filename = patent.pdf_file.name.split('/')[-1]
+    #filename=''
+    #if patent.pdf_file:
+    try:
+        #filename = patent.pdf_file.name.split('/')[-1]
         response = HttpResponse(patent.pdf_file, content_type='application/pdf')
-    else:
+    except Exception as e:
+        print(e)
         return render(request,'main/show_message.html',{'message':'该专利没有文件',
                                                         'success':0})
     #response['Content-Disposition'] = 'attachment; filename=%s' % filename
-
     return response
+
 NOTE_TYPE=(
     (0,'公有'),
     (1,'私有'),

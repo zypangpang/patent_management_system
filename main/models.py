@@ -3,9 +3,10 @@ from django.dispatch import receiver
 from django.db import models
 from django.contrib.auth.models import User
 
+FILE_DIR_PREFIX='patent_pdf/'
 def pdf_directory_path(instance,filename):
     #year=datetime.datetime.strptime(instance.pub_date,"%Y-%m-%d").year
-    return f'patent_pdf/{instance.pub_id}.pdf'
+    return FILE_DIR_PREFIX+instance.pub_id+'.pdf'
 def test_dir_path(instance,filename):
     return f'test_pdf/{instance.name}.pdf'
 
