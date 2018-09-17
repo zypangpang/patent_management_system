@@ -68,8 +68,8 @@ def add_patent_from_row(row,pdf_file):
     p=Patent(title=row['title'],title_cn=row['title_cn'],abstract=row['abstract'],
                      abstract_cn=row['abstract_cn'],index=row['index'],branch1=row['branch1'],
                      branch2=row['branch2'],branch3=row['branch3'],invent_desc=row['invent_desc'],
-                     tech_prob=row['tech_prob'],pub_id=row['pub_id'],pub_date=row['pub_date'].replace('/','-'),
-                     application_id=row['application_id'],application_date=row['application_date'].replace('/','-'),
+                     tech_prob=row['tech_prob'],pub_id=row['pub_id'],pub_date=row['pub_date'],
+                     application_id=row['application_id'],application_date=row['application_date'],
                    patent_type=row['patent_type'],cat_id=row['cat_id'],pdf_file=pdf_file)
     #if request_files:
     #    p.pdf_file=request_files['pdf_file']
@@ -288,8 +288,7 @@ def change_data(request):
     pub_id=request.POST['pub_id']
     p=Patent.objects.get(pk=pub_id)
 
-    family_patents=FamilyFatent.objects.filter(patent=p)
-    family_patents.delete()
+
 
     row=request.POST
     applicants,nations=add_applicants_and_nations(row['applicants'], row['nations'])
@@ -305,14 +304,15 @@ def change_data(request):
     p.invent_desc=row['invent_desc']
     p.tech_prob=row['tech_prob']
     p.pub_id=row['pub_id']
-    p.pub_date=row['pub_date'].replace('/','-')
+    p.pub_date=row['pub_date']
     p.application_id=row['application_id']
-    p.application_date=row['application_date'].replace('/','-')
+    p.application_date=row['application_date']
     p.patent_type=row['patent_type']
     p.cat_id=row['cat_id']
     #if request_files:
     #    p.pdf_file=request_files['pdf_file']
     p.save()
+
 
     p.applicants.clear()
     p.nations.clear()
@@ -321,6 +321,8 @@ def change_data(request):
     for nation in nations:
         p.nations.add(nation)
 
+    family_patents=FamilyFatent.objects.filter(patent=p)
+    family_patents.delete()
     add_same_family_patents(p,row['same_family_patent'])
 
 @login_required
@@ -346,7 +348,12 @@ def get_notes(user,patent):
 @login_required
 def show_data(request):
     if request.method=='POST':
-        change_data(request)
+        try:
+            change_data(request)
+        except Exception as e:
+            print(e)
+            return render(request,'main/show_message.html',{'success':0,
+                                                        'message':'修改数据失败，请检查输入是否有错'})
         return render(request,'main/show_message.html',{'message':'数据修改成功',
                                                         'success':1})
     else:
