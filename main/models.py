@@ -24,6 +24,9 @@ class Patent(models.Model):
     #    (3,'实用新型'),
     #    (4,'外观设计'),
     #)
+    def __str__(self):
+        return self.pub_id+':'+self.title
+
     title = models.TextField()
     title_cn=models.TextField()
     abstract=models.TextField()

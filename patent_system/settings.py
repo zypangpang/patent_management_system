@@ -129,3 +129,33 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_ROOT='/var/media/'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'django_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/django_log/info.log',
+        },
+        'main_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/django_log/main_info.log',
+        },
+    },
+    'loggers': {
+        ## Enabel this handler when deploying
+        #'django': {
+        #    'handlers': ['django_file'],
+        #    'level': 'INFO',
+        #    'propagate': True,
+        #},
+        'main':{
+            'handlers': ['main_file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}

@@ -1,4 +1,4 @@
-import csv,bisect,json
+import csv,bisect,json,logging
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files import File
@@ -9,6 +9,9 @@ from .models import Nation,Applicant,FamilyFatent,Patent,Note
 from django.contrib.auth.decorators import login_required
 
 from django.http import HttpResponse
+
+logger=logging.getLogger(__name__)
+
 PATENT_TYPES=('不确定',
         '发明申请',
         '发明授权',
@@ -20,6 +23,10 @@ FILE_CACHE_DIR='patent_cache/'
 #        2:'发明授权',
 #        3:'实用新型',
 #        4:'外观设计',}
+def log_and_print(msg):
+    logger.info(msg)
+    print(msg)
+
 def find(a, x):
     'Locate the leftmost value exactly equal to x'
     i = bisect.bisect_left(a, x)
@@ -75,6 +82,7 @@ def add_patent_from_row(row,pdf_file):
     #    p.pdf_file=request_files['pdf_file']
 
     #may raise exception
+
     p.save()
 
     applicants,nations=add_applicants_and_nations(row['applicants'], row['nations'])
@@ -117,7 +125,7 @@ def add_patents_from_csv_and_pdfs(csv_file,pdf_files):
             try:
                 add_patent_from_csv_row(row,pdf_files[t])
             except Exception as e:
-                print(e)
+                log_and_print(e)
                 error_messages.append(pub_id+"出错!")
 
             ####### 此处正式应用时删除###########
@@ -137,7 +145,7 @@ def add_same_family_patents(patent,same_family_str):
             try:
                 FamilyFatent(patent=patent, same_family_patent=sfpatent).save()
             except Exception as e:
-                print(e)
+                log_and_print(e)
 
 def add_applicants_and_nations(applicant_str, nation_str):
     applicants=applicant_str.split(';')
@@ -160,6 +168,7 @@ def add_applicants_and_nations(applicant_str, nation_str):
 
 @login_required
 def index(request):
+    logger.info('zypang: get index')
     return redirect(reverse('main:query'))
 
 @login_required
@@ -172,7 +181,7 @@ def add_data(request):
             add_patent_from_row(request.POST,request.FILES['pdf_file'])
 
         except Exception as e:
-            print(e)
+            log_and_print(e)
             message='添加失败'
         return render(request, 'main/add.html', {'patent_types':PATENT_TYPES,
                                                  'user_name':request.user.get_username(),
@@ -329,12 +338,15 @@ def change_data(request):
 def del_data(request):
     pub_id=request.POST['pub_id']
     return_dict={'success':1}
+
     try:
         patent=Patent.objects.get(pk=pub_id)
         patent.delete()
     except Exception as e:
-        print(e)
+        log_and_print(e)
         return_dict['success']=0
+    else:
+        log_and_print(request.user.get_username()+' : delete patent : '+pub_id)
 
     return HttpResponse(json.dumps(return_dict))
 def get_notes(user,patent):
@@ -351,7 +363,7 @@ def show_data(request):
         try:
             change_data(request)
         except Exception as e:
-            print(e)
+            log_and_print(e)
             return render(request,'main/show_message.html',{'success':0,
                                                         'message':'修改数据失败，请检查输入是否有错'})
         return render(request,'main/show_message.html',{'message':'数据修改成功',
@@ -361,7 +373,7 @@ def show_data(request):
         try:
             patent=Patent.objects.get(pk=pub_id)
         except Exception as e:
-            print(e)
+            log_and_print(e)
             return render(request,'main/show_message.html',
                           {'message':'数据库中查不到本专利，请检查公开号',
                            'success':0})
@@ -395,7 +407,7 @@ def view_file(request,pub_id):
         #filename = patent.pdf_file.name.split('/')[-1]
         response = HttpResponse(patent.pdf_file, content_type='application/pdf')
     except Exception as e:
-        print(e)
+        log_and_print(e)
         return render(request,'main/show_message.html',{'message':'该专利没有文件',
                                                         'success':0})
     #response['Content-Disposition'] = 'attachment; filename=%s' % filename
@@ -413,7 +425,7 @@ def add_notes(request):
     try:
         Note.objects.create(patent_id=pub_id,user=user,note=note,type=type)
     except Exception as e:
-        print(e)
+        log_and_print(e)
         return render(request,'main/show_message.html',{'message':'添加批注失败',
                                                         'success':0})
     return redirect(reverse("main:detail")+'?pub_id='+pub_id)
