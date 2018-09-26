@@ -12,4 +12,7 @@ urlpatterns = [
     path('detail/',views.show_data,name='detail'),
     path('add_note/',views.add_notes,name='add_notes'),
     path('file/<str:pub_id>.pdf',views.view_file,name='view_file'),
+
+    #ONLY FOR DEBUG !
+    path('clear/',views.clear_all,name='clear_all'),
 ]

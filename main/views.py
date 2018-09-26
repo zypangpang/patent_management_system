@@ -37,10 +37,17 @@ def find(a, x):
 def add_patent_from_csv_row(row,pdf_file):
     #error_id=''
     #pdf_path=settings.MEDIA_ROOT+FILE_CACHE_DIR+row['公开（公告）号']+'.pdf'
-    p=Patent(title=row['标题'],title_cn=row['标题（翻译）'],abstract=row['摘要'],
+    p=None
+    try:
+        p=Patent(title=row['标题'],title_cn=row['标题（翻译）'],abstract=row['摘要'],
                      abstract_cn=row['摘要（翻译）'],index=row['标引'],branch1=row['一级分支'],
                      branch2=row['二级分支'],branch3=row['三级分支'],invent_desc=row['发明点'],
                      tech_prob=row['技术问题'],pub_id=row['公开（公告）号'],pub_date=row['公开（公告）日'].replace('/','-'),
+                     application_id=row['申请号'],application_date=row['申请日'].replace('/','-'),
+                   patent_type=row['专利类型'],cat_id=row['主分类号'],pdf_file=pdf_file)
+    except:
+        p=Patent(title=row['标题'],title_cn=row['标题（翻译）'],abstract=row['摘要'],
+                     abstract_cn=row['摘要（翻译）'],index=row['标引'],pub_id=row['公开（公告）号'],pub_date=row['公开（公告）日'].replace('/','-'),
                      application_id=row['申请号'],application_date=row['申请日'].replace('/','-'),
                    patent_type=row['专利类型'],cat_id=row['主分类号'],pdf_file=pdf_file)
     p.save()
@@ -429,5 +436,11 @@ def add_notes(request):
         return render(request,'main/show_message.html',{'message':'添加批注失败',
                                                         'success':0})
     return redirect(reverse("main:detail")+'?pub_id='+pub_id)
+
+#clear_all function ONLY FOR DEBUG!
+def clear_all(request):
+    Patent.objects.all().delete()
+    return render(request,'main/show_message.html',{'message':'清空成功',
+                                                    'success':1})
 
 # Create your views here.
