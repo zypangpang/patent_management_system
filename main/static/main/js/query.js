@@ -28,8 +28,28 @@ $(function () {
             success: function(data)
             {
                 //console.log(data);
-                $('#query_show_div').empty();
-                $('#query_show_div').append(data);
+                var obj=JSON.parse(data);
+                $('#result_count').text('('+obj['result_count']+')');
+                $('#table_content').empty();
+                var query_result=obj['query_result'];
+                for(var i=0;i<query_result.length;++i) {
+                    item=query_result[i];
+                    var row=$(document.createElement("tr"));
+                    for(var j=0;j<item.length;++j ) {
+                        row.append('<td><a class="text-black" href="detail/?pub_id="' + item[2] + '">'+item[j]+'</a></td>');
+                    }
+                    $('#table_content').append(row);
+                }
+                if(!obj['has_next']){
+                    $('#next_btn').addClass('disabled');
+                }
+                cur_page=obj['page'];
+                $('#cur_page').text(cur_page);
+                if(cur_page<=1){
+                    $('#previous_btn').addClass('disabled');
+                }
+
+                //$('#query_show_div').append(data);
                 //$('#result_header').text('查询结果('+$('#result_count').text()+')');
 
             }

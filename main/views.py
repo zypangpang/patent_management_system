@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 
 logger=logging.getLogger(__name__)
-
+PAGE_SIZE=50
 PATENT_TYPES=('不确定',
         '发明申请',
         '发明授权',
@@ -244,7 +244,8 @@ SHOW_FIELDS=(('标题','20%'),('标题（翻译）','20%'),('公开号','10%'),
 @login_required
 def query_data(request):
     if request.method=='POST':
-
+        query_page=int(request.POST['page'])
+        #query_page=1
         query_field_count=request.POST['field_count']
         QObject=Q()
         for i in range(1,int(query_field_count)+1):
@@ -259,10 +260,13 @@ def query_data(request):
                 QObject &= or_object
             else:
                 QObject &=Q(**{query_field+'__icontains':query_text})
-        query_raw_result=Patent.objects.filter(QObject).distinct()
-        result_length=len(query_raw_result)
-        if result_length>100:
-            query_raw_result=query_raw_result[:100]
+        query_raw_result=Patent.objects.filter(QObject).distinct()[(query_page-1)*PAGE_SIZE:query_page*PAGE_SIZE]
+        result_length=query_raw_result.count()
+        return_dict={}
+        return_dict['has_next']=1
+        if result_length<=query_page*PAGE_SIZE:
+            #no next page
+            return_dict['has_next']=0
         query_result=[]
         for item in query_raw_result:
             applicant_str=';'.join([a.name for a in item.applicants.all()])
@@ -270,17 +274,20 @@ def query_data(request):
             query_result.append([item.title,item.title_cn,item.pub_id,item.pub_date.strftime('%Y-%m-%d'),
                                  item.application_id,item.application_date.strftime('%Y-%m-%d'),applicant_str,
                                  item.patent_type])
-        result_count=str(result_length)
-        if(result_length>100):
-            result_count+='，只显示前100'
+        return_dict['result_count']=result_length
+        return_dict['query_result']=query_result
+        return_dict['page']=query_page
 
+        print(json.dumps(return_dict))
+
+        return HttpResponse(json.dumps(return_dict))
         #return render(request,'main/query.html',{'query_fields':QUERY_FIELDS,
         #                                         'query_result':query_result,
         #                                         'show_fields':SHOW_FIELDS})
-        return render(request,'main/query_result_table.html',{'query_result':query_result,
-                                                              'user_name':request.user.get_username(),
-                                                              'show_fields':SHOW_FIELDS,
-                                                              'result_count':result_count})
+        #return render(request,'main/query_result_table.html',{'query_result':query_result,
+        #                                                      'user_name':request.user.get_username(),
+        #                                                      'show_fields':SHOW_FIELDS,
+        #                                                      'result_count':result_length})
     else:
         query_raw_result=Patent.objects.all()
         query_result=[]

@@ -1,20 +1,20 @@
 <h5 id="result_count" hidden >{{ result_count }}</h5>
 <h3 id="result_header">查询结果<small>({{ result_count }})</small></h3>
-            <table class="table table-striped bg-white table-bordered table-hover">
-                <thead class="table-primary">
-                <tr>
-                    {% for field,width in show_fields %}
-                        <th style="width: {{ width }};">{{ field }}</th>
-                    {% endfor %}
-                </tr>
-                </thead>
-                <tbody id="table_content">
-                {% for item in query_result %}
-                    <tr>
-                        {% for field in item %}
-                            <td><a class="text-black" href="{% url 'main:detail' %}?pub_id={{ item.2 }}">{{ field }}</a></td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+<table class="table table-striped bg-white table-bordered table-hover">
+    <thead class="table-primary">
+    <tr>
+        {% for field,width in show_fields %}
+            <th style="width: {{ width }};">{{ field }}</th>
+        {% endfor %}
+    </tr>
+    </thead>
+    <tbody id="table_content">
+    {% for item in query_result %}
+        <tr>
+            {% for field in item %}
+                <td><a class="text-black" href="{% url 'main:detail' %}?pub_id={{ item.2 }}">{{ field }}</a></td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
