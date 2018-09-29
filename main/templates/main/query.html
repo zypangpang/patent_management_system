@@ -93,9 +93,9 @@
         <div class="row my-2 px-1 justify-content-between">
             <input type="number" hidden name="field_count" id="field_count" value="1">
             <button type="button" class="btn btn-light px-5" id="add_field_btn">添加条件</button>
-            <input type="submit" class="btn btn-primary px-5 "value="提交">
+            <input type="button" id="submit_btn" class="btn btn-primary px-5 "value="提交">
         </div>
-    <input type="number" hidden name="page" value="1">
+    <input type="number" hidden name="page" id="page_input" value="1">
     </form>
 
     <div class="row  mt-3">
@@ -113,7 +113,7 @@
                 {% for item in query_result %}
                     <tr>
                         {% for field in item %}
-                            <td><a class="text-black" href="{% url 'main:detail' %}?pub_id={{ item.2 }}">{{ field }}</a></td>
+                            <td><a target="_blank" class="text-black" href="{% url 'main:detail' %}?pub_id={{ item.2 }}">{{ field }}</a></td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
@@ -124,9 +124,13 @@
 
     <div class="row  justify-content-center">
         <ul class="pagination">
-            <li class="page-item" id="previous_btn"><a class="page-link" href="#">上一页</a></li>
-            <li class="page-item"><a class="page-link" id="cur_page" href="#">1</a></li>
+            <li class="page-item disabled" id="previous_btn"><a class="page-link" href="#">上一页</a></li>
+            <li class="page-item" ><a class="page-link" id="cur_page" href="#">1</a></li>
+            {% if has_next %}
             <li class="page-item" id="next_btn"><a class="page-link" href="#">下一页</a></li>
+            {% else %}
+                <li class="page-item disabled" id="next_btn"><a class="page-link" href="#">下一页</a></li>
+            {% endif %}
         </ul>
     </div>
 </div>
