@@ -10,7 +10,8 @@ $(function () {
             '</select> </div>'+
             '<input name="query_text_'+field_count+'" type="text" class="form-control">'+
             '</div></div></div>');
-        $('#field_count').attr('value',field_count)
+        $('#field_count').attr('value',field_count);
+        $('#add_field_btn').hide();
     });
 
 
@@ -30,6 +31,18 @@ $(function () {
             {
                 //console.log(data);
                 var obj=JSON.parse(data);
+
+                if(!obj['query_year']) {
+                    var application_years = obj['application_years'];
+                    var year_select = $('#year_select');
+                    year_select.empty();
+                    year_select.append('<option value="1">不限</option>');
+                    for (var i = 0; i < application_years.length; ++i) {
+                        var year = application_years[i];
+                        year_select.append('<option value="' + year + '">' + year + '</option>');
+                    }
+                }
+
                 $('#result_count').text('('+obj['result_count']+')');
                 $('#table_content').empty();
                 var query_result=obj['query_result'];
@@ -37,7 +50,7 @@ $(function () {
                     item=query_result[i];
                     var row=$(document.createElement("tr"));
                     for(var j=0;j<item.length;++j ) {
-                        row.append('<td><a target="_blank" class="text-black" href="/detail/?pub_id=' + item[2] + '">'+item[j]+'</a></td>');
+                        row.append('<td><a target="_blank" class="text-black just-line-break" href="/detail/?pub_id=' + item[2] + '">'+item[j]+'</a></td>');
                     }
                     $('#table_content').append(row);
                 }
@@ -65,6 +78,7 @@ $(function () {
     });
     $('#submit_btn').click(function () {
         $('#page_input').val(1);
+        $('#year_input').val(1);
         frm.submit();
     });
 
@@ -82,7 +96,14 @@ $(function () {
             frm.submit();
         }
     });
+    $('#year_select').change(function () {
+        $('#page_input').val(1);
+        $('#year_input').val($('#year_select').val());
+        frm.submit();
+    });
+
 });
+
 
 $(document).keypress(function(e) {
     //bind enter key to submit form

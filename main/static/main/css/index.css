@@ -114,3 +114,6 @@ body {
 ::placeholder{
     color: #bcbcbc !important;
 }
+.just-line-break {
+  white-space: pre-line;
+}

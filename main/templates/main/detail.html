@@ -124,10 +124,12 @@
             <h3 class="mx-2 p-0">专利项目详情</h3>
         </div>
         <div class="col-sm-2 p-1 m-0 d-flex justify-content-end">
-            <button id="change_btn" type="button" class="btn btn-primary mx-2">修改</button>
+            <!--<button id="change_btn" type="button" class="btn btn-primary mx-2">修改</button>-->
             <a target="_blank" href="{% url 'main:view_file' item.pub_id %}" id="view_file_btn" role="button" class="btn btn-primary mx-2">查看文件</a>
+            {% if can_del %}
             <button id="del_btn" type="button" class="btn btn-danger mx-2"
                     data-toggle="modal" data-target="#delModal">删除</button>
+            {% endif %}
         </div>
     </div>
 

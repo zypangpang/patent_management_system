@@ -109,7 +109,7 @@ def add_patents_from_csv_and_pdfs(csv_file,pdf_files):
 
     f_csv = csv.DictReader(csv_file)
 
-    #implementation 1
+    #implementation 1 ---------correct code------------
     '''for myfile in pdf_files:
         fs = FileSystemStorage()
         fs.save(FILE_CACHE_DIR+myfile.name, myfile)
@@ -239,43 +239,75 @@ QUERY_FIELDS=(
     ('cat_id','主分类号'),('nations__name','同族国家'),
 )
 SHOW_FIELDS=(('标题','20%'),('标题（翻译）','20%'),('公开号','10%'),
-             ('公开（公告）日','10%'),('申请号','10%'),('申请日','10%'),('申请人','10%'),
-             ('专利类型','10%'))
+             ('申请号','10%'),('申请日','10%'),
+             ('标引','10%'),('用户批注','20%'))
+
+             #('公开（公告）日','10%')
+             #('申请人','10%'),
+             #('专利类型','10%'))
+def get_query_results_str(request,query_raw_result):
+    query_result=[]
+    for item in query_raw_result:
+        applicant_str=';'.join([a.name for a in item.applicants.all()])
+        #patent_type=PATENT_TYPE_DICT_REVERSE[item.patent_type]
+        notes=get_private_notes(request.user,item)
+        if notes:
+            notes_str='\n'.join([note.user.get_username()+': '+note.note[:10] for note in notes])
+        else:
+            notes_str=''
+        query_result.append([item.title,item.title_cn,item.pub_id,#item.pub_date.strftime('%Y-%m-%d'),
+                             item.application_id,item.application_date.strftime('%Y-%m-%d'),#applicant_str,
+                             item.index,notes_str])
+                                 #item.patent_type])
+    return query_result
+
 @login_required
 def query_data(request):
     if request.method=='POST':
+        return_dict={}
         query_page=int(request.POST['page'])
         #query_page=1
         query_field_count=request.POST['field_count']
         QObject=Q()
+        #process year
+        year=request.POST['year']
+        print(year)
+        return_dict['query_year']=False
+        if year!='1':
+            QObject &= Q(application_date__year=year)
+            return_dict['query_year']=True
+
         for i in range(1,int(query_field_count)+1):
             query_field=request.POST['query_field_'+str(i)]
             query_text=request.POST['query_text_'+str(i)].strip()
-            #get or object
-            if '|' in query_text:
-                or_object=Q()
-                or_texts=query_text.split('|')
-                for text in or_texts:
-                    or_object |= Q(**{query_field+'__icontains':text.strip()})
-                QObject &= or_object
-            else:
-                QObject &=Q(**{query_field+'__icontains':query_text})
-        query_raw_result=Patent.objects.filter(QObject).distinct()
+            #get or object--------correct code----------
+            #if '|' in query_text:
+            #    or_object=Q()
+            #    or_texts=query_text.split('|')
+            #    for text in or_texts:
+            #        or_object |= Q(**{query_field+'__icontains':text.strip()})
+            #    QObject &= or_object
+            #else:
+            #    QObject &=Q(**{query_field+'__icontains':query_text})
+            QObject &=Q(**{query_field+'__icontains':query_text})
+
+        query_raw_result=Patent.objects.order_by('-application_date').filter(QObject).distinct()
+        application_years=query_raw_result.values('application_date__year').distinct().order_by()
+        application_years_list=[a['application_date__year'] for a in application_years]#.sort(reverse=True)
+        application_years_list.sort(reverse=True)
+
+        return_dict['application_years']=application_years_list
         result_length=query_raw_result.count()
-        return_dict={}
         if result_length<=query_page*PAGE_SIZE:
             #no next page
             return_dict['has_next']=0
         else:
             return_dict['has_next']=1
         query_raw_result=query_raw_result[(query_page-1)*PAGE_SIZE:query_page*PAGE_SIZE]
-        query_result=[]
-        for item in query_raw_result:
-            applicant_str=';'.join([a.name for a in item.applicants.all()])
-            #patent_type=PATENT_TYPE_DICT_REVERSE[item.patent_type]
-            query_result.append([item.title,item.title_cn,item.pub_id,item.pub_date.strftime('%Y-%m-%d'),
-                                 item.application_id,item.application_date.strftime('%Y-%m-%d'),applicant_str,
-                                 item.patent_type])
+
+
+        query_result=get_query_results_str(request,query_raw_result)
+
         return_dict['result_count']=result_length
         return_dict['query_result']=query_result
         return_dict['page']=query_page
@@ -291,25 +323,25 @@ def query_data(request):
         #                                                      'show_fields':SHOW_FIELDS,
         #                                                      'result_count':result_length})
     else:
-        query_raw_result=Patent.objects.all()
+        query_raw_result=Patent.objects.order_by('-application_date').all()
+        application_years=query_raw_result.values('application_date__year').distinct().order_by()
+        application_years_list=[a['application_date__year'] for a in application_years]#.sort(reverse=True)
+        application_years_list.sort(reverse=True)
+
         result_length=query_raw_result.count()
         has_next=0
         if result_length>PAGE_SIZE:
             has_next=1
             query_raw_result=query_raw_result[:PAGE_SIZE]
-        query_result=[]
-        for item in query_raw_result:
-            applicant_str=';'.join([a.name for a in item.applicants.all()])
-            #patent_type=PATENT_TYPE_DICT_REVERSE[item.patent_type]
-            query_result.append([item.title,item.title_cn,item.pub_id,item.pub_date.strftime('%Y-%m-%d'),
-                                 item.application_id,item.application_date.strftime('%Y-%m-%d'),applicant_str,
-                                 item.patent_type])
+
+        query_result=get_query_results_str(request,query_raw_result)
 
         return render(request,'main/query.html',{'query_fields':QUERY_FIELDS,
                                                  'show_fields':SHOW_FIELDS,
                                                  'user_name':request.user.get_username(),
                                                  'result_count':result_length,
                                                  'has_next':has_next,
+                                                 'application_years':application_years_list,
                                                  'query_result':query_result})
 @login_required
 def change_data(request):
@@ -377,45 +409,58 @@ def get_notes(user,patent):
               Note.objects.filter(patent=patent,user=user)
     return notes
 
+def get_private_notes(user,patent):
+    if user.has_perm('main.view_private_notes'):
+        notes=Note.objects.filter(patent=patent,type=1)
+    else:
+        notes=Note.objects.filter(patent=patent,user=user,type=1)
+
+    return notes
+
 @login_required
 def show_data(request):
-    if request.method=='POST':
-        try:
-            change_data(request)
-        except Exception as e:
-            log_and_print(e)
-            return render(request,'main/show_message.html',{'success':0,
-                                                        'message':'修改数据失败，请检查输入是否有错'})
-        return render(request,'main/show_message.html',{'message':'数据修改成功',
-                                                        'success':1})
-    else:
-        pub_id=request.GET['pub_id']
-        try:
-            patent=Patent.objects.get(pk=pub_id)
-        except Exception as e:
-            log_and_print(e)
-            return render(request,'main/show_message.html',
-                          {'message':'数据库中查不到本专利，请检查公开号',
-                           'success':0})
+    #below code for change data---------correct code---------------
+    #if request.method=='POST':
+    #    try:
+    #        change_data(request)
+    #    except Exception as e:
+    #        log_and_print(e)
+    #        return render(request,'main/show_message.html',{'success':0,
+    #                                                    'message':'修改数据失败，请检查输入是否有错'})
+    #    return render(request,'main/show_message.html',{'message':'数据修改成功',
+    #                                                    'success':1})
+    #else:
+    pub_id=request.GET['pub_id']
+    try:
+        patent=Patent.objects.get(pk=pub_id)
+    except Exception as e:
+        log_and_print(e)
+        return render(request,'main/show_message.html',
+                      {'message':'数据库中查不到本专利，请检查公开号',
+                       'success':0})
 
-        applicant_str=';'.join([a.name for a in patent.applicants.all()])
-        nation_str=','.join([a.name for a in patent.nations.all()])
-        family_patents=FamilyFatent.objects.filter(patent=patent)
-        family_patent_str=';'.join([a.same_family_patent for a in family_patents])
+    applicant_str=';'.join([a.name for a in patent.applicants.all()])
+    nation_str=','.join([a.name for a in patent.nations.all()])
+    family_patents=FamilyFatent.objects.filter(patent=patent)
+    family_patent_str=';'.join([a.same_family_patent for a in family_patents])
 
-        notes=get_notes(request.user,patent)
-        return_dict={
-            'item':patent,
-            'applicant_str':applicant_str,
-            'nation_str':nation_str,
-            'family_patent_str':family_patent_str,
-            'notes':notes,
-            'user_name':request.user.get_username(),
+    notes=get_notes(request.user,patent)
+    can_del=False
+    if request.user.has_perm('main.view_private_notes'):
+        can_del=True
+    return_dict={
+        'item':patent,
+        'applicant_str':applicant_str,
+        'nation_str':nation_str,
+        'family_patent_str':family_patent_str,
+        'notes':notes,
+        'user_name':request.user.get_username(),
 
-            'patent_types':PATENT_TYPES,
-            'note_types':NOTE_TYPE,
-        }
-        return render(request,'main/detail.html',return_dict)
+        'patent_types':PATENT_TYPES,
+        'note_types':NOTE_TYPE,
+        'can_del':can_del,
+    }
+    return render(request,'main/detail.html',return_dict)
 
 @login_required
 def view_file(request,pub_id):

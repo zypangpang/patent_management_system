@@ -90,17 +90,28 @@
                 </div>
             </div>
         </div>
-        <div class="row my-2 px-1 justify-content-between">
+        <div class="row my-2 px-1 ">
             <input type="number" hidden name="field_count" id="field_count" value="1">
-            <button type="button" class="btn btn-light px-5" id="add_field_btn">添加条件</button>
-            <input type="button" id="submit_btn" class="btn btn-primary px-5 "value="提交">
+            <button type="button" class="btn btn-light px-5 left" id="add_field_btn">添加条件</button>
+            <input type="button" id="submit_btn" class="btn btn-primary px-5 ml-auto"value="提交">
         </div>
     <input type="number" hidden name="page" id="page_input" value="1">
+    <input type="number" hidden name="year" id="year_input" value="1">
     </form>
 
     <div class="row  mt-3">
         <div class="col p-0 mx-1" id="query_show_div">
-            <h3 id="result_header">查询结果<small id="result_count">({{ result_count }})</small></h3>
+            <div class="row justify-content-between mx-1 my-0 p-0 ">
+                <h3 id="result_header">查询结果<small id="result_count">({{ result_count }})</small></h3>
+                <div class="form-group m-0 p-0">
+                    <select class="form-control" id="year_select">
+                        <option value="1">不限</option>
+                        {% for year in application_years %}
+                        <option value="{{ year }}">{{  year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
             <table class="table table-striped bg-white table-bordered table-hover">
                 <thead class="table-primary">
                 <tr>
@@ -113,7 +124,7 @@
                 {% for item in query_result %}
                     <tr>
                         {% for field in item %}
-                            <td><a target="_blank" class="text-black" href="{% url 'main:detail' %}?pub_id={{ item.2 }}">{{ field }}</a></td>
+                            <td><a target="_blank" class="text-black just-line-break" href="{% url 'main:detail' %}?pub_id={{ item.2 }}">{{ field }}</a></td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
