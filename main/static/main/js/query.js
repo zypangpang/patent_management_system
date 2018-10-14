@@ -47,7 +47,7 @@ $(function () {
                 $('#table_content').empty();
                 var query_result=obj['query_result'];
                 for(var i=0;i<query_result.length;++i) {
-                    item=query_result[i];
+                    var item=query_result[i];
                     var row=$(document.createElement("tr"));
                     for(var j=0;j<item.length;++j ) {
                         row.append('<td><a target="_blank" class="text-black just-line-break" href="/detail/?pub_id=' + item[2] + '">'+item[j]+'</a></td>');
@@ -60,7 +60,7 @@ $(function () {
                 else{
                     $('#next_btn').removeClass('disabled');
                 }
-                cur_page=obj['page'];
+                var cur_page=obj['page'];
                 $('#cur_page').text(cur_page);
                 if(cur_page<=1){
                     $('#previous_btn').addClass('disabled');
