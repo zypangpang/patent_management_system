@@ -3,7 +3,7 @@ $(function () {
         var field_count=$('#field_count').val();
         ++field_count;
         $('#query_field_container').append(
-            '<div class="row my-2"><div class="col p-0 mx-1"><div class="input-group">' +
+            '<div class="row my-2 mx-5"><div class="col p-0 mx-1"><div class="input-group">' +
             '<div class="input-group-prepend">'+
             '<select class="input-group-text" name="query_field_'+field_count+'">'+
             $('#query_field_select').html()+

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}数据查询{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {% load static %}
+    <link type="text/css" href="{% static "main/css/bootstrap.min.css"%}" rel="stylesheet">
+    {% load static %}
+    <script src="{% static "main/js/jquery-3.3.1.min.js" %}"></script>
+
+    {% load static %}
+    <script src="{% static "main/js/popper.min.js" %}"></script>
+    <!--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">-->
+    {% load static %}
+    <link type="text/css" href="{% static "main/css/fontawesom-all.css" %}" rel="stylesheet">
+    {% load static %}
+    <script src="{% static "main/js/bootstrap.min.js" %}"></script>
+
+
+
+        <!--[if lte IE 8]>
+{% load static %}
+    <script src="{% static "main/js/respond.js" %}"></script>
+{% load static %}
+    <script src="{% static "main/js/html5shiv.js" %}"></script>
+<![endif]-->
+
+    <!--[if lte IE 8]>
+    {% load static %}
+    <link type="text/css" href="{% static "main/css/bootstrap-ie8.css"%}" rel="stylesheet">
+    {% load static %}
+    <script src="{% static "main/js/bootstrap-ie8.js" %}"></script>
+
+    <style>
+        .nav-collapse.collapse {
+            height: auto !important;
+            overflow: visible !important;
+        }
+        .navbar-inverse .nav li.dropdown.open > .dropdown-toggle,
+        .navbar-inverse .nav li.dropdown.active > .dropdown-toggle,
+        .navbar-inverse .nav li.dropdown.open.active > .dropdown-toggle,
+        .navbar,
+        .navbar-inverse .navbar-inner {
+            filter: none !important;
+            background-image: none;
+        }
+    </style>
+    <![endif]-->
+
+    <!--[if lte IE 8]>
+    {% load static %}
+    <script src="{% static "main/js/ie8.js" %}"></script>
+    {% load static %}
+    <script src="{% static "main/js/jquery-1.11.3.min.js" %}"></script>
+    <![endif]-->
+
+    {% load static %}
+    <link type="text/css" rel="stylesheet" href="{% static "main/css/index.css" %}">
+
+    {% block extra_head %}{% endblock %}
+
+</head>
+<body>
+<!--<nav class="navbar navbar-expand-md bg-white navbar-light my-4 px-3 py-0 ">-->
+<nav class="navbar navbar-expand-md bkg-white-color navbar-light px-3 py-0 fixed-top shadow">
+    <!-- Brand -->
+    <!--[if !IE]><!-->
+    <a class="navbar-brand" href="{% url 'main:index' %}">
+        <h5 class="p-0 m-0">专利管理系统</h5>
+    </a>
+    <!--<![endif]-->
+
+    <!-- Toggler/collapsibe Button -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar links -->
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link p-3" href="{% url 'main:index' %}">
+                    <h5 class="p-0 m-0">主页</h5>
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link p-3 " href="#"  data-toggle="dropdown">
+                    <h5 class="p-0 m-0">数据库管理</h5>
+                </a>
+                <div class="dropdown-menu border-0 rounded-0 m-0 py-0 ">
+                    <a class="dropdown-item px-3 py-2" href="{% url 'main:import' %}">
+                        导入
+                    </a>
+                    <a class="dropdown-item px-3 py-2" href="{% url 'main:add' %}">
+                        新增
+                    </a>
+                    <a class="dropdown-item px-3 py-2" href="{% url 'main:query' %}">
+                        查询
+                    </a>
+                    <a class="dropdown-item px-3 py-2" href="{% url 'main:clear_all' %}">
+                        清空
+                    </a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link p-3  " href="" data-toggle="dropdown">
+                    <h5 class="p-0 m-0">{{ user_name }}</h5>
+                </a>
+                <div class="dropdown-menu border-0 rounded-0 m-0 py-0 ">
+                    <a class="dropdown-item px-3 py-2" href="{% url 'account:logout' %}">
+                        登出
+                    </a>
+                </div>
+            </li>
+
+        </ul>
+    </div>
+</nav>
+
+{% block content %}{% endblock %}
+
+<footer class="container-fluid bkg-white-color py-1 mt-2 fixed-bottom">
+    <div class="row">
+        <div class="col-sm-12 d-flex justify-content-between">
+            <span>Copyright &copy; 2017 ZYPANG</span>
+            <span>{% now "jS F Y H:i"  %}</span>
+        </div>
+    </div>
+</footer>
+</body>

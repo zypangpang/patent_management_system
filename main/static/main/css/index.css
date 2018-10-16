@@ -1,5 +1,5 @@
 :root {
-    --panel-white-color: rgba(255,255,255,0.7);
+    --panel-white-color: rgba(255,255,255,0.9);
     --panel-dark-color: rgba(0,0,0,0.3);
 }
 @media (min-width: 1400px) {

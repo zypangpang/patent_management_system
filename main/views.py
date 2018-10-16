@@ -44,7 +44,8 @@ def add_patent_from_csv_row(row,pdf_file):
                      branch2=row['二级分支'],branch3=row['三级分支'],invent_desc=row['发明点'],
                      tech_prob=row['技术问题'],pub_id=row['公开（公告）号'],pub_date=row['公开（公告）日'].replace('/','-'),
                      application_id=row['申请号'],application_date=row['申请日'].replace('/','-'),
-                   patent_type=row['专利类型'],cat_id=row['主分类号'],pdf_file=pdf_file)
+                     patent_type=row['专利类型'],law_state=row['法律状态'],
+                     cat_id=row['主分类号'],pdf_file=pdf_file)
     except:
         p=Patent(title=row['标题'],title_cn=row['标题（翻译）'],abstract=row['摘要'],
                      abstract_cn=row['摘要（翻译）'],index=row['标引'],pub_id=row['公开（公告）号'],pub_date=row['公开（公告）日'].replace('/','-'),
@@ -83,6 +84,7 @@ def add_patent_from_row(row,pdf_file):
                      abstract_cn=row['abstract_cn'],index=row['index'],branch1=row['branch1'],
                      branch2=row['branch2'],branch3=row['branch3'],invent_desc=row['invent_desc'],
                      tech_prob=row['tech_prob'],pub_id=row['pub_id'],pub_date=row['pub_date'],
+                     law_state=row['law_state'],
                      application_id=row['application_id'],application_date=row['application_date'],
                    patent_type=row['patent_type'],cat_id=row['cat_id'],pdf_file=pdf_file)
     #if request_files:
@@ -238,9 +240,9 @@ QUERY_FIELDS=(
     ('application_date','申请日'),('applicants__name','申请人'),('patent_type','专利类型'),
     ('cat_id','主分类号'),('nations__name','同族国家'),
 )
-SHOW_FIELDS=(('标题','20%'),('标题（翻译）','20%'),('公开号','10%'),
-             ('申请号','10%'),('申请日','10%'),
-             ('标引','10%'),('用户批注','20%'))
+SHOW_FIELDS=(('标题','15%'),('标题（翻译）','15%'),('公开号','8%'),
+             ('申请日','8%'),('申请人','14%'),
+             ('标引','8%'),('法律状态','8%'),('公有标记','12%'),('私有标记','12%'))
 
              #('公开（公告）日','10%')
              #('申请人','10%'),
@@ -250,14 +252,16 @@ def get_query_results_str(request,query_raw_result):
     for item in query_raw_result:
         applicant_str=';'.join([a.name for a in item.applicants.all()])
         #patent_type=PATENT_TYPE_DICT_REVERSE[item.patent_type]
-        notes=get_private_notes(request.user,item)
-        if notes:
-            notes_str='\n'.join([note.user.get_username()+': '+note.note[:10] for note in notes])
-        else:
-            notes_str=''
+        pub_notes,pri_notes=get_my_notes(request.user,item)
+        pub_notes_str=''
+        pri_notes_str=''
+        if pub_notes:
+            pub_notes_str='; '.join([note.note[:10] for note in pub_notes])
+        if pri_notes:
+            pri_notes_str='; '.join([note.note[:10] for note in pri_notes])
         query_result.append([item.title,item.title_cn,item.pub_id,#item.pub_date.strftime('%Y-%m-%d'),
-                             item.application_id,item.application_date.strftime('%Y-%m-%d'),#applicant_str,
-                             item.index,notes_str])
+                             item.application_date.strftime('%Y-%m-%d'),applicant_str,
+                             item.index,item.law_state,pub_notes_str,pri_notes_str])
                                  #item.patent_type])
     return query_result
 
@@ -409,13 +413,15 @@ def get_notes(user,patent):
               Note.objects.filter(patent=patent,user=user)
     return notes
 
-def get_private_notes(user,patent):
-    if user.has_perm('main.view_private_notes'):
-        notes=Note.objects.filter(patent=patent,type=1)
-    else:
-        notes=Note.objects.filter(patent=patent,user=user,type=1)
+def get_my_notes(user,patent):
+    #if user.has_perm('main.view_private_notes'):
+    #    notes=Note.objects.filter(patent=patent,type=1)
+    #else:
+    #    notes=Note.objects.filter(patent=patent,user=user,type=1)
+    pub_notes=Note.objects.filter(patent=patent,user=user,type=0)
+    private_notes=Note.objects.filter(patent=patent,user=user,type=1)
 
-    return notes
+    return pub_notes,private_notes
 
 @login_required
 def show_data(request):

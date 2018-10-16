@@ -1,69 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Bootstrap Example</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    {% load static %}
-    <link type="text/css" href="{% static "main/css/bootstrap.min.css"%}" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-    {% load static %}
-  <script src="{% static "main/js/bootstrap.min.js" %}"></script>
-
-    {% load static %}
-    <link type="text/css" rel="stylesheet" href="{% static "main/css/index.css" %}">
-</head>
-<body>
-<nav class="navbar navbar-expand-md bg-white navbar-light my-4 px-3 py-0">
-    <!-- Brand -->
-    <a class="navbar-brand" href="{% url 'main:index' %}">
-        <h5 class="p-0 m-0">专利管理系统</h5>
-    </a>
-
-    <!-- Toggler/collapsibe Button -->
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <!-- Navbar links -->
-    <div class="collapse navbar-collapse" id="collapsibleNavbar">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item dropdown">
-                <a class="nav-link p-4 " href="" data-toggle="dropdown">
-                    <h5 class="p-0 m-0">数据库管理</h5>
-                </a>
-                <div class="dropdown-menu border-0 rounded-0 m-0 py-0 ">
-                    <a class="dropdown-item px-3 py-2" href="{% url 'main:import' %}">
-                        导入
-                    </a>
-                    <a class="dropdown-item px-3 py-2" href="{% url 'main:add' %}">
-                        新增
-                    </a>
-                    <a class="dropdown-item px-3 py-2" href="{% url 'main:query' %}">
-                        查询
-                    </a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link p-4 " href="" data-toggle="dropdown">
-                    <h5 class="p-0 m-0">{{ user_name }}</h5>
-                </a>
-                <div class="dropdown-menu border-0 rounded-0 m-0 py-0 ">
-                    <a class="dropdown-item px-3 py-2" href="{% url 'account:logout' %}">
-                        登出
-                    </a>
-                </div>
-            </li>
-            <!--<li class="nav-item">
-                <a class="nav-link p-4" href="#">
-                    <h5 class="p-0 m-0">备用</h5>
-                </a>
-            </li>-->
-        </ul>
-    </div>
-</nav>
-<div class="container">
+{% extends "./base.html" %}
+{% block title %}导入专利{% endblock %}
+{% block content %}
+<div class="container" style="margin-top: 80px;margin-bottom: 30px">
     <h3 class="mb-3 mx-1 p-0">导入数据</h3>
     <form action="/import/" method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -93,7 +31,4 @@
 
 </form>
 </div>
-
-
-</body>
-</html>
+{% endblock %}
