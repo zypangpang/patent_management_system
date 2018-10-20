@@ -222,9 +222,11 @@ def import_data(request):
             #test_file.save()
         if errors:
             return render(request,'main/show_message.html',{'message':'\n'.join(errors),
+                                                            'user_name':request.user.get_username(),
                                                             'success':0})
 
         return render(request,'main/show_message.html',{'message':'数据导入成功',
+                                                        'user_name':request.user.get_username(),
                                                         'success':1})
 
     else:
@@ -443,6 +445,7 @@ def show_data(request):
         log_and_print(e)
         return render(request,'main/show_message.html',
                       {'message':'数据库中查不到本专利，请检查公开号',
+                       'user_name':request.user.get_username(),
                        'success':0})
 
     applicant_str=';'.join([a.name for a in patent.applicants.all()])
@@ -480,6 +483,7 @@ def view_file(request,pub_id):
     except Exception as e:
         log_and_print(e)
         return render(request,'main/show_message.html',{'message':'该专利没有文件',
+                                                        'user_name':request.user.get_username(),
                                                         'success':0})
     #response['Content-Disposition'] = 'attachment; filename=%s' % filename
     return response
@@ -498,6 +502,7 @@ def add_notes(request):
     except Exception as e:
         log_and_print(e)
         return render(request,'main/show_message.html',{'message':'添加批注失败',
+                                                        'user_name':request.user.get_username(),
                                                         'success':0})
     return redirect(reverse("main:detail")+'?pub_id='+pub_id)
 

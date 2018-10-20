@@ -131,7 +131,14 @@
                     <input name="applicants" required type="text" class="form-control" readonly value="{{ applicant_str }}">
                 </div>
             </div>
-
+            <div class="col px-2" >
+                <div class="input-group m-0">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">法律状态</span>
+                    </div>
+                    <input name="law_state" required type="text" class="form-control" readonly value="{{ item.law_state }}">
+                </div>
+            </div>
             <div class="col px-2" >
                 <div class="input-group">
                     <div class="input-group-prepend">
